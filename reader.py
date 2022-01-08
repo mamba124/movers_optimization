@@ -91,4 +91,3 @@ def get_unread_mails():
                 pass
             
         return scraped_links
-#get_unread_mails()
