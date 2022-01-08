@@ -14,6 +14,9 @@ class MockedDriver:
     def navigate(self):
         return MockedDriverInstance(self.page)
     
+    def get(self, link):
+        pass
+
     
 class MockedDriverInstance(MockedDriver):
     def __init__(self, page):
@@ -31,4 +34,3 @@ class MockedDriverInstance(MockedDriver):
 
     def refresh(self):
         pass
-
