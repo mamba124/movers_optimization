@@ -1,14 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from fake_useragent import UserAgent
-from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-import pickle 
-import os
 import random
 import time
 from datetime import datetime 
@@ -29,11 +24,14 @@ def generate_proxy():
     options = Options()
     options.headless = True
     options.add_argument("start-maximized")
+
     driver = webdriver.Firefox(profile, options=options)
     driver.get("https://sslproxies.org/")
     driver.execute_script("return arguments[0].scrollIntoView(true);", WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//table[@class='table table-striped table-bordered']//th[contains(., 'IP Address')]"))))
+
     ips = [my_elem.get_attribute("innerHTML") for my_elem in WebDriverWait(driver, 5).until(EC.visibility_of_all_elements_located((By.XPATH, "//table[@class='table table-striped table-bordered']//tbody//tr/td[position() = 1]")))]
     ports = [my_elem.get_attribute("innerHTML") for my_elem in WebDriverWait(driver, 5).until(EC.visibility_of_all_elements_located((By.XPATH, "//table[@class='table table-striped table-bordered']//tbody//tr/td[position() = 2]")))]
+    
     driver.quit()
     proxies = []
     for i in range(0, len(ips)):

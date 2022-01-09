@@ -9,8 +9,8 @@ class MockedObject:
     def __init__(self):
         self.text = "Karl"
 
-dog_page = open("source_pages/dog.html").read()
-general_page = open("source_pages/general_message_page.html").read()
+dog_page = open("tests/test_files/dog.html").read()
+general_page = open("tests/test_files/general_message_page.html").read()
 
 
 def test_dog_check(caplog):

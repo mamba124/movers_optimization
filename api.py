@@ -10,7 +10,7 @@ if __name__ == '__main__':
     driver = initialize_driver()
    # time.sleep(60*30)
     while True:
-        if datetime.now().hour >= 16 or datetime.now().hour <= 8:
+        if datetime.now().hour >= 16 or datetime.now().hour <= 14:
             try:
                 scraped_links = get_unread_mails()
                 if scraped_links:
