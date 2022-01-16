@@ -11,12 +11,11 @@ class MockedDriver:
     def find_element(self, name, attr):
         return MockedDriverInstance(self.page)
     
-    def navigate(self):
-        return MockedDriverInstance(self.page)
-    
     def get(self, link):
         pass
 
+    def refresh(self):
+        pass
     
 class MockedDriverInstance(MockedDriver):
     def __init__(self, page):
@@ -32,5 +31,3 @@ class MockedDriverInstance(MockedDriver):
     def click(self):
         print("clicked")
 
-    def refresh(self):
-        pass

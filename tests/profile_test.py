@@ -1,5 +1,4 @@
 import unittest
-import pytest
 import logging
 from tests.mocked_selenium import MockedDriver
 from selenium_utils import dog_check, get_opportunity, build_message, login
@@ -16,7 +15,7 @@ general_page = open("tests/test_files/general_message_page.html").read()
 def test_dog_check(caplog):
     with caplog.at_level(logging.INFO):
         driver = MockedDriver(dog_page)
-        dog_check(driver)
+        dog_check(driver) 
         assert caplog.record_tuples[0][2] == "HTTP 504 - GATEWAY TIMEOUT, refreshing.."
 
 

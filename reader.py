@@ -15,36 +15,55 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.modify']
 
 
-def token_time_validation(default_delta=7):
+def token_time_validation(default_delta=7, token_path="token.pickle"):
     today = datetime.today()
-    created_at = datetime.strptime(time.ctime(os.path.getctime("token.pickle")), "%a %b %d %H:%M:%S %Y")
+    created_at = datetime.strptime(time.ctime(os.path.getctime(token_path)), "%a %b %d %H:%M:%S %Y")
     timedelta = today - created_at
     if timedelta.days >= default_delta:
-        os.remove("tocken.pickle")
+        os.remove(token_path)
 
 
-def token_check():
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+def token_check(path='token.pickle'):
+    creds = None
+    if os.path.exists(path):
+        with open(path, 'rb') as token:
             creds = pickle.load(token)
     return creds
 
 
-def refresh_token(creds):
+def refresh_token(creds, credentials_path="credentials.json", token_path="token.pickle"):
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:
-        flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+        print(1)
+        flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
+        # Indicate where the API server will redirect the user after the user completes
+        # the authorization flow. The redirect URI is required. The value must exactly
+        # match one of the authorized redirect URIs for the OAuth 2.0 client, which you
+        # configured in the API Console. If this value doesn't match an authorized URI,
+        # you will get a 'redirect_uri_mismatch' error.
+        flow.redirect_uri = 'https://www.example.com/oauth2callback'
+        
+        # Generate URL for request to Google's OAuth 2.0 server.
+        # Use kwargs to set optional request parameters.
+        authorization_url, state = flow.authorization_url(
+            # Enable offline access so that you can refresh an access token without
+            # re-prompting the user for permission. Recommended for web server apps.
+            access_type='offline',
+            login_hint = "californiaexperessmail@gmail.com",
+            approval_prompt="force",
+            # Enable incremental authorization. Recommended as a best practice.
+            include_granted_scopes='true')
         creds = flow.run_local_server(port=0)
-    with open('token.pickle', 'wb') as token:
+    with open(token_path, 'wb') as token:
         pickle.dump(creds, token)
     return creds
 
 
 def get_unread_mails():
-    token_time_validation()
     creds = token_check()
-    if not creds or not creds.valid:   
+    if not creds or not creds.valid:  
+    #    token_time_validation()
         creds = refresh_token(creds)
     service = build('gmail', 'v1', credentials=creds)
     unread_mail_list_request = service.users().messages().list(userId='me', q="is:unread").execute()

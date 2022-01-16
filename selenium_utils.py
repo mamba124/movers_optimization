@@ -114,7 +114,7 @@ def build_message(name):
 def dog_check(driver):
     html = driver.find_elements("css selector", "html")[0].get_attribute("outerHTML")
     if "HTTP 504 - GATEWAY TIMEOUT" in html:
-        driver.navigate().refresh()
+        driver.refresh()
         logging.info("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
 
 """
