@@ -35,7 +35,6 @@ def refresh_token(creds, credentials_path="credentials.json", token_path="token.
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:
-        print(1)
         flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
         # Indicate where the API server will redirect the user after the user completes
         # the authorization flow. The redirect URI is required. The value must exactly
@@ -95,8 +94,7 @@ def parse_messages(messages, service):
                 for d in headers:
                     if d['name'] == 'Subject':
                         subject = d['value']
-            #        if d['name'] == 'From':
-            #            sender = d['value']
+
                 if "job for" in subject:
                     parts = payload.get('parts')
                     for part in parts:

@@ -43,11 +43,22 @@ def generate_proxy():
     except Exception as e:
         print(e)
         driver.quit()
+        my_proxy = None
     return my_proxy
 
 
 def initialize_driver():
-    my_proxy = generate_proxy()
+    for attempt in range(5):
+        sleep_time = 1.8 ** attempt
+        my_proxy = generate_proxy()
+        if my_proxy:
+            break
+        else:
+            time.sleep(sleep_time)
+    if attempt == 4:
+        raise Exception("all attempts exceeded, couldn't get proxy")
+    options = Options()
+    options.headless = True
     proxy = Proxy({
          'proxyType': ProxyType.MANUAL,
          'httpProxy': my_proxy,
@@ -56,7 +67,7 @@ def initialize_driver():
          'noProxy': '' # set this value as desired
     })
 
-    driver = webdriver.Firefox(proxy=proxy)    
+    driver = webdriver.Firefox(proxy=proxy, options=options)    
     driver.maximize_window()
     return driver
 
@@ -89,7 +100,12 @@ def get_opportunity(driver):
         logging.info(f"Answered at {datetime.now().time()}")
         success = True
     except Exception as e:
-        print(e)
+        quote_time = driver.find_elements("css selector", "body > yelp-react-root > div > div.messenger-container__09f24__qt8O4 > div > div.messenger_right__09f24__fndbc.border--left__09f24__Lt8WF.border-color--default__09f24__JbNoB > div > div > div.u-flex__09f24__rt07y.u-flex-column__09f24__m6LIn.u-flex-item__09f24__YuSEF.border-color--default__09f24__JbNoB > div.project-description-container__09f24__zySxi.u-flex-item__09f24__YuSEF.messenger-right.border-color--default__09f24__JbNoB > div > div > div.messages-grouped-by-time-view_group_time-sent__09f24__lCCiu.border-color--default__09f24__NPAKY > p")
+        if quote_time:
+            quote_time_string = f"Quote appeared at the time {quote_time[0]}"
+        else:
+            quote_time_string = ""
+        logging.info(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
     return success
 
 
