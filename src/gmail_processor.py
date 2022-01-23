@@ -15,7 +15,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.modify']
 
 
-def token_time_validation(default_delta=7, token_path="token.pickle"):
+def token_time_validation(default_delta=7, token_path="secret_files/token.pickle"):
     today = datetime.today()
     created_at = datetime.strptime(time.ctime(os.path.getctime(token_path)), "%a %b %d %H:%M:%S %Y")
     timedelta = today - created_at
@@ -23,7 +23,7 @@ def token_time_validation(default_delta=7, token_path="token.pickle"):
         os.remove(token_path)
 
 
-def token_check(path='token.pickle'):
+def token_check(path='secret_files/token.pickle'):
     creds = None
     if os.path.exists(path):
         with open(path, 'rb') as token:
@@ -31,7 +31,7 @@ def token_check(path='token.pickle'):
     return creds
 
 
-def refresh_token(creds, credentials_path="credentials.json", token_path="token.pickle"):
+def refresh_token(creds, credentials_path="secret_files/credentials.json", token_path="secret_files/token.pickle"):
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:

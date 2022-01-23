@@ -1,7 +1,7 @@
 import unittest
 import logging
 from tests.mocked_selenium import MockedDriver
-from selenium_utils import dog_check, get_opportunity, build_message, login
+from src.source_work import dog_check, get_opportunity, build_message, login
 
 
 class MockedObject:
@@ -34,7 +34,7 @@ def test_get_opportunity(caplog):
     assert success == True
 
 
-@unittest.mock.patch("selenium_utils.navigate_through_button_menu", side_effect=AttributeError)
+@unittest.mock.patch("src.source_work.navigate_through_button_menu", side_effect=AttributeError)
 def test_get_opportunity_fail(failing_func):
     try:
         driver = MockedDriver(general_page)
