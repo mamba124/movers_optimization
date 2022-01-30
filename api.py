@@ -1,15 +1,17 @@
 import time
 import logging
+import os
 from datetime import datetime
 from src.source_work import login, get_opportunity
 from src.preprocess_driver import initialize_driver
 from src.gmail_processor import get_unread_mails
 from src.common import validate_launch_time
 
-
 start_time, end_time = validate_launch_time()
 
+
 if __name__ == '__main__':
+    auth = False
     driver = initialize_driver()
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
@@ -17,14 +19,23 @@ if __name__ == '__main__':
                 scraped_links = get_unread_mails()
                 if scraped_links:
                     for link in scraped_links:
+                        if not auth:
+                            driver.get(link)
+                        else:
+                            driver.execute_script(f'''window.open("{link}","_blank");''')
                         print(f"process link {link} at time {datetime.now().time()}")
-                        login(driver, link)
-                        now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
+                        while not auth:
+                            auth = login(driver, link)
+                    for handler in driver.window_handles:
+                        driver.switch_to.window(handler)
                         success = get_opportunity(driver)
                         print(f"Successful? {success}")
                         logging.info(f"Successful? {success}")
-                        driver.save_screenshot(f"screens/{now}.png")
+                        now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                        
+                        driver.save_screenshot(f"screens/{now}.png")                        
             except Exception as e:
                 print(e)
+                if "cookies.pickle" in os.listdir():
+                    os.remove("cookies.pickle")
                 pass
         time.sleep(10)  

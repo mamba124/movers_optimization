@@ -15,18 +15,21 @@ with open("secret_files/user_info.json", "r") as f:
 
 
 def login(driver, link):
-    driver.get(link)
-    time.sleep(2)
+    time.sleep(3)
     dog_check(driver)
     email_element = driver.find_elements("name", "email")
     pass_element = driver.find_elements("name", "password")
     if email_element and pass_element:
-        email_element[0].send_keys("")
-        pass_element[0].send_keys("")
+        email_element[0].send_keys(credentials["username"])
+        pass_element[0].send_keys(credentials["password"])
         driver.find_elements("tag name", "button")[0].click()
+        time.sleep(2)
+        print(f"Authenticated at time {datetime.now().time()}")
+        return True
 
 
 def get_opportunity(driver):
+    dog_check(driver)
     time.sleep(0.1)
     success = False
     print(f"Accessed at {datetime.now().time()}")
