@@ -10,6 +10,7 @@ import time
 import os
 from datetime import datetime
 import logging
+import socket
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.modify']
@@ -65,9 +66,21 @@ def get_unread_mails():
     #    token_time_validation()
         creds = refresh_token(creds)
     service = build('gmail', 'v1', credentials=creds)
-    unread_mail_list_request = service.users().messages().list(userId='me', q="is:unread").execute()
-    messages = unread_mail_list_request.get('messages')
-    scraped_links = parse_messages(messages, service)
+    num_retries = 0
+    response_valid = False
+    while num_retries < 10: 
+        try: 
+            unread_mail_list_request = service.users().messages().list(userId='me', q="is:unread").execute()
+            response_valid = True
+            break
+        except socket.timeout:
+            num_retries = num_retries + 1 
+            time.sleep(0.05*num_retries)
+    if response_valid:
+        messages = unread_mail_list_request.get('messages')
+        scraped_links = parse_messages(messages, service)
+    else:
+        scraped_links = []
     return scraped_links
 
 
