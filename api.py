@@ -6,6 +6,7 @@ from src.source_work import login, get_opportunity
 from src.preprocess_driver import initialize_driver
 from src.gmail_processor import get_unread_mails
 from src.common import validate_launch_time
+import traceback
 
 start_time, end_time = validate_launch_time()
 
@@ -35,7 +36,9 @@ if __name__ == '__main__':
                         driver.save_screenshot(f"screens/{now}.png")                        
             except Exception as e:
                 print(e)
+                traceback.print_exc()
                 if "cookies.pickle" in os.listdir():
                     os.remove("cookies.pickle")
                 pass
+            
         time.sleep(10)  
