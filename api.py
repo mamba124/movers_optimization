@@ -30,10 +30,12 @@ if __name__ == '__main__':
                     for handler in driver.window_handles:
                         driver.switch_to.window(handler)
                         success = get_opportunity(driver)
-                        print(f"Successful? {success}")
+                        print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
                         logging.info(f"Successful? {success}")
                         now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                        
-                        driver.save_screenshot(f"screens/{now}.png")                        
+                        driver.save_screenshot(f"screens/{now}.png")
+                        driver.close()
+                        
             except Exception as e:
                 print(e)
                 traceback.print_exc()
