@@ -7,6 +7,8 @@ from src.preprocess_driver import initialize_driver
 from src.gmail_processor import get_unread_mails
 from src.common import validate_launch_time
 import traceback
+import pandas as pd
+
 
 start_time, end_time = validate_launch_time()
 
@@ -35,7 +37,8 @@ if __name__ == '__main__':
                         if success:
                             now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
                             driver.save_screenshot(f"screens/{now}.png")
-                            driver.close()
+                            if len(driver.window_handles) > 1:
+                                driver.close()
                         
             except Exception as e:
                 print(e)
