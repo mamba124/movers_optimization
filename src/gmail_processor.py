@@ -89,7 +89,8 @@ def get_encoded_message(service, msg):
         txt = service.users().messages().get(userId='me', id=msg['id']).execute()
         return txt
     except Exception as ex:
-        logging.ERROR(ex)
+        logging.error(ex)
+        print(ex)
 
 
 def parse_messages(messages, service):
