@@ -16,7 +16,7 @@ def test_multiple_requests(mocked_login, capsys):
         print(f"process link {link} at time {datetime.now().time()}")
         login(driver, link)
         now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
-        success = get_opportunity(driver)
+        success, _, _ = get_opportunity(driver)
         print(f"Successful? {success}")
 
 

@@ -32,6 +32,8 @@ def get_opportunity(driver):
     dog_check(driver)
     time.sleep(0.1)
     success = False
+    t1 = datetime.now().time()
+    t2 = None
     print(f"Accessed at {datetime.now().time()}")
     try:
         name = driver.find_elements("css selector", NAME_SELECTOR)
@@ -42,6 +44,7 @@ def get_opportunity(driver):
         message.send_keys(message_text)       
 
         driver.find_element("css selector", SEND_BUTTON).click()
+        t2 = datetime.now().time()
         logging.info(f"Answered at {datetime.now().time()}")
         print(f"Answered at {datetime.now().time()}")
         success = True
@@ -49,11 +52,12 @@ def get_opportunity(driver):
         quote_time = driver.find_elements("css selector", "body > yelp-react-root > div > div.messenger-container__09f24__qt8O4 > div > div.messenger_right__09f24__fndbc.border--left__09f24__Lt8WF.border-color--default__09f24__JbNoB > div > div > div.u-flex__09f24__rt07y.u-flex-column__09f24__m6LIn.u-flex-item__09f24__YuSEF.border-color--default__09f24__JbNoB > div.project-description-container__09f24__zySxi.u-flex-item__09f24__YuSEF.messenger-right.border-color--default__09f24__JbNoB > div > div > div.messages-grouped-by-time-view_group_time-sent__09f24__lCCiu.border-color--default__09f24__NPAKY > p")
         if quote_time:
             quote_time_string = f"Quote appeared at the time {quote_time[0].text}"
+            t2 = quote_time[0].text
         else:
             quote_time_string = ""
         logging.info(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
         print(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
-    return success
+    return success, t1, t2
 
 
 def navigate_through_button_menu(driver):

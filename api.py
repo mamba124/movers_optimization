@@ -7,15 +7,15 @@ from src.preprocess_driver import initialize_driver
 from src.gmail_processor import get_unread_mails
 from src.common import validate_launch_time
 import traceback
-import pandas as pd
-
+import json
 
 start_time, end_time = validate_launch_time()
-
+logs = {}
 
 if __name__ == '__main__':
     auth = False
     driver = initialize_driver()
+    old_counter = 0
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
@@ -24,21 +24,34 @@ if __name__ == '__main__':
                     for link in scraped_links:
                         if not auth:
                             driver.get(link)
+                            counter = 0
+                            logs[counter] = None
                         else:
                             driver.execute_script(f'''window.open("{link}","_blank");''')
+                            counter += 1
+                        logs[counter] = {}
+                        logs[counter]["processed"] = str(datetime.now().time())
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
                             auth = login(driver, link)
-                    for handler in driver.window_handles:
-                        driver.switch_to.window(handler)
-                        success = get_opportunity(driver)
-                        print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
-                        logging.info(f"Successful? {success}")
-                        if success:
-                            now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
-                            driver.save_screenshot(f"screens/{now}.png")
-                            if len(driver.window_handles) > 1:
-                                driver.close()
+                    for index, handler in enumerate(driver.window_handles):
+                        if index > old_counter:
+                            driver.switch_to.window(handler)
+                            success, t1, t2 = get_opportunity(driver)
+                            print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
+                            logging.info(f"Successful? {success}")
+                            logs[counter]['success'] = success
+                            logs[counter]['accessed'] = str(t1)
+                            logs[counter]['processed/quote qublished'] = str(t2)
+                            with open("stats.json", 'w') as f:
+                                json.dump(logs, f)
+                            old_counter = index
+                            if success:
+                                now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
+                                driver.save_screenshot(f"screens/{now}.png")
+
+                            #    if len(driver.window_handles) > 1:
+                            #        driver.close()
                         
             except Exception as e:
                 print(e)

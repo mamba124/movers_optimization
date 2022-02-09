@@ -29,7 +29,7 @@ def test_dog_check_invalid(caplog):
 def test_get_opportunity(caplog):
     with caplog.at_level(logging.INFO):
         driver = MockedDriver(general_page)
-        success = get_opportunity(driver)
+        success, _, _ = get_opportunity(driver)
     assert "Answered" in caplog.record_tuples[0][2]
     assert success == True
 
@@ -38,7 +38,7 @@ def test_get_opportunity(caplog):
 def test_get_opportunity_fail(failing_func):
     try:
         driver = MockedDriver(general_page)
-        success = get_opportunity(driver)
+        success, _, _ = get_opportunity(driver)
     except AttributeError:
         assert success == False
 
