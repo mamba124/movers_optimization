@@ -37,7 +37,7 @@ if __name__ == '__main__':
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)
-                            time.sleep(4)
+                            time.sleep(6)
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
                             logging.info(f"Successful? {success}")
@@ -47,9 +47,9 @@ if __name__ == '__main__':
                             with open("stats.json", 'w') as f:
                                 json.dump(logs, f)
                             
-                            if success:
-                                now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
-                                driver.save_screenshot(f"screens/{now}.png")
+                            #if success:
+                            now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
+                            driver.save_screenshot(f"screens/{now}.png")
                     old_counter = index                                
 
                             #    if len(driver.window_handles) > 1:

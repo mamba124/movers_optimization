@@ -26,8 +26,8 @@ def login(driver, link):
         email_element[0].send_keys(credentials["username"])
         pass_element[0].send_keys(credentials["password"])
         driver.find_elements("tag name", "button")[0].click()
-        time.sleep(2)
         print(f"Authenticated at time {datetime.now().time()}")
+        time.sleep(4)        
         return True
 
 
@@ -85,9 +85,11 @@ def build_message(name):
 
 def dog_check(driver):
     try:
+        print(f"wait for logo{datetime.now().time()}")
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "html"))
         )
+        print(f"got it.{datetime.now().time()}")
     finally:    
         html = driver.find_elements("css selector", "html")[0].get_attribute("outerHTML")
         if "HTTP 504 - GATEWAY TIMEOUT" in html:
