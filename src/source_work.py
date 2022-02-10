@@ -11,7 +11,7 @@ RADIO_BUTTON = "#how_do_you_want_to_get_more_information--3"
 NAME_SELECTOR = "body > yelp-react-root > div:nth-child(1) > div.messenger-container__09f24__qt8O4 > div > div.messenger_right__09f24__fndbc.border--left__09f24__Lt8WF.border-color--default__09f24__JbNoB > div > div > div.u-flex__09f24__rt07y.u-flex-column__09f24__m6LIn.u-flex-item__09f24__YuSEF.border-color--default__09f24__JbNoB > div.messenger_right_top__09f24__ZxW58.u-padding-t3.u-padding-b3.border--bottom__09f24__Yl28T.border-color--default__09f24__JbNoB > div > div > div > div.arrange-unit__09f24__rqHTg.arrange-unit-fill__09f24__CUubG.border-color--default__09f24__NPAKY > div.user-passport-info.border-color--default__09f24__NPAKY > span > a"
 OPTION_BUTTON = "div.margin-r3__09f24__ppHm0:nth-child(2) > button"
 SEND_BUTTON = "#modal-portal-container > div:nth-child(2) > div > div > div > div > div.border-color--default__09f24__JbNoB > div > div > div.padding-t4__09f24__Y6aGL.padding-r4__09f24__PQlH_.padding-b4__09f24__q6U6q.padding-l4__09f24__XrHdl.border-color--default__09f24__NPAKY.text-align--left__09f24__ju_Ri > div > div:nth-child(3) > button"
-
+ANSWER_BUTTON = ".button--wide__09f24__dKiSe"
 with open("secret_files/user_info.json", "r") as f:
     credentials = json.load(f)
 
@@ -38,18 +38,20 @@ def get_opportunity(driver):
     t2 = None
     print(f"Accessed at {datetime.now().time()}")
     try:
-        name = driver.find_elements("css selector", NAME_SELECTOR)
-        navigate_through_button_menu(driver)            
-
-        message_text = build_message(name)
-        message = driver.find_element("name", "introduce_yourself_send_message")
-        message.send_keys(message_text)       
         try:
             WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "html"))
             )
         finally:
-            driver.find_element("css selector", SEND_BUTTON).click()
+            driver.find_element("css selector", SEND_BUTTON).click()        
+            name = driver.find_elements("css selector", NAME_SELECTOR)
+            navigate_through_button_menu(driver)            
+    
+            message_text = build_message(name)
+            message = driver.find_element("name", "introduce_yourself_send_message")
+            message.send_keys(message_text)       
+            
+            driver.find_element("css selector", ANSWER_BUTTON).click()
             t2 = datetime.now().time()
             logging.info(f"Answered at {datetime.now().time()}")
             print(f"Answered at {datetime.now().time()}")
@@ -67,14 +69,14 @@ def get_opportunity(driver):
 
 
 def navigate_through_button_menu(driver):
-    driver.find_element("css selector", OPTION_BUTTON).click()
+   # driver.find_element("css selector", OPTION_BUTTON).click()
     time.sleep(0.2)
     driver.find_element("css selector", RADIO_BUTTON).click()
     time.sleep(0.2)
-    is_next = driver.find_elements("css selector", NEXT_BUTTON)
-    if is_next:
-        is_next[0].click()
-    
+   # is_next = driver.find_elements("css selector", NEXT_BUTTON)
+  #  if is_next:
+    #    is_next[0].click()
+ #   
 
 def build_message(name):
     if name:
