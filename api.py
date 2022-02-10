@@ -37,6 +37,7 @@ if __name__ == '__main__':
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)
+                            time.sleep(4)
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
                             logging.info(f"Successful? {success}")
