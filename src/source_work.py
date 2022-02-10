@@ -2,7 +2,9 @@ import time
 import json
 from datetime import datetime 
 import logging
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 NEXT_BUTTON = "#modal-portal-container > div:nth-child(2) > div > div > div > div > div.border-color--default__09f24__JbNoB > div > div > div.padding-t4__09f24__Y6aGL.padding-r4__09f24__PQlH_.padding-b4__09f24__q6U6q.padding-l4__09f24__XrHdl.border-color--default__09f24__NPAKY.text-align--left__09f24__ju_Ri > div > div:nth-child(2) > div > button" 
 RADIO_BUTTON = "#how_do_you_want_to_get_more_information--3"
@@ -42,12 +44,16 @@ def get_opportunity(driver):
         message_text = build_message(name)
         message = driver.find_element("name", "introduce_yourself_send_message")
         message.send_keys(message_text)       
-
-        driver.find_element("css selector", SEND_BUTTON).click()
-        t2 = datetime.now().time()
-        logging.info(f"Answered at {datetime.now().time()}")
-        print(f"Answered at {datetime.now().time()}")
-        success = True
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "html"))
+            )
+        finally:
+            driver.find_element("css selector", SEND_BUTTON).click()
+            t2 = datetime.now().time()
+            logging.info(f"Answered at {datetime.now().time()}")
+            print(f"Answered at {datetime.now().time()}")
+            success = True
     except Exception:
         quote_time = driver.find_elements("css selector", "body > yelp-react-root > div > div.messenger-container__09f24__qt8O4 > div > div.messenger_right__09f24__fndbc.border--left__09f24__Lt8WF.border-color--default__09f24__JbNoB > div > div > div.u-flex__09f24__rt07y.u-flex-column__09f24__m6LIn.u-flex-item__09f24__YuSEF.border-color--default__09f24__JbNoB > div.project-description-container__09f24__zySxi.u-flex-item__09f24__YuSEF.messenger-right.border-color--default__09f24__JbNoB > div > div > div.messages-grouped-by-time-view_group_time-sent__09f24__lCCiu.border-color--default__09f24__NPAKY > p")
         if quote_time:
