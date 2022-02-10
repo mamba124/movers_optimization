@@ -10,7 +10,8 @@ NEXT_BUTTON = "#modal-portal-container > div:nth-child(2) > div > div > div > di
 RADIO_BUTTON = "#how_do_you_want_to_get_more_information--3"
 NAME_SELECTOR = "body > yelp-react-root > div:nth-child(1) > div.messenger-container__09f24__qt8O4 > div > div.messenger_right__09f24__fndbc.border--left__09f24__Lt8WF.border-color--default__09f24__JbNoB > div > div > div.u-flex__09f24__rt07y.u-flex-column__09f24__m6LIn.u-flex-item__09f24__YuSEF.border-color--default__09f24__JbNoB > div.messenger_right_top__09f24__ZxW58.u-padding-t3.u-padding-b3.border--bottom__09f24__Yl28T.border-color--default__09f24__JbNoB > div > div > div > div.arrange-unit__09f24__rqHTg.arrange-unit-fill__09f24__CUubG.border-color--default__09f24__NPAKY > div.user-passport-info.border-color--default__09f24__NPAKY > span > a"
 OPTION_BUTTON = "div.margin-r3__09f24__ppHm0:nth-child(2) > button"
-SEND_BUTTON = "#modal-portal-container > div:nth-child(2) > div > div > div > div > div.border-color--default__09f24__JbNoB > div > div > div.padding-t4__09f24__Y6aGL.padding-r4__09f24__PQlH_.padding-b4__09f24__q6U6q.padding-l4__09f24__XrHdl.border-color--default__09f24__NPAKY.text-align--left__09f24__ju_Ri > div > div:nth-child(3) > button"
+#SEND_BUTTON = "#modal-portal-container > div:nth-child(2) > div > div > div > div > div.border-color--default__09f24__JbNoB > div > div > div.padding-t4__09f24__Y6aGL.padding-r4__09f24__PQlH_.padding-b4__09f24__q6U6q.padding-l4__09f24__XrHdl.border-color--default__09f24__NPAKY.text-align--left__09f24__ju_Ri > div > div:nth-child(3) > button"
+SEND_BUTTON = "div.margin-r3__09f24__ppHm0:nth-child(2) > button:nth-child(1)"
 ANSWER_BUTTON = ".button--wide__09f24__dKiSe"
 with open("secret_files/user_info.json", "r") as f:
     credentials = json.load(f)
