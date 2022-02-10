@@ -39,25 +39,21 @@ def get_opportunity(driver):
     t2 = None
     print(f"Accessed at {datetime.now().time()}")
     try:
-        try:
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "html"))
-            )
-        finally:
-            driver.find_element("css selector", SEND_BUTTON).click()        
-            name = driver.find_elements("css selector", NAME_SELECTOR)
-            navigate_through_button_menu(driver)            
+        driver.find_element("css selector", SEND_BUTTON).click()        
+        name = driver.find_elements("css selector", NAME_SELECTOR)
+        navigate_through_button_menu(driver)            
     
-            message_text = build_message(name)
-            message = driver.find_element("name", "introduce_yourself_send_message")
-            message.send_keys(message_text)       
-            
-            driver.find_element("css selector", ANSWER_BUTTON).click()
-            t2 = datetime.now().time()
-            logging.info(f"Answered at {datetime.now().time()}")
-            print(f"Answered at {datetime.now().time()}")
-            success = True
-    except Exception:
+        message_text = build_message(name)
+        message = driver.find_element("name", "introduce_yourself_send_message")
+        message.send_keys(message_text)       
+        
+        driver.find_element("css selector", ANSWER_BUTTON).click()
+        t2 = datetime.now().time()
+        logging.info(f"Answered at {datetime.now().time()}")
+        print(f"Answered at {datetime.now().time()}")
+        success = True
+    except Exception as ex:
+        print(ex)
         quote_time = driver.find_elements("css selector", "body > yelp-react-root > div > div.messenger-container__09f24__qt8O4 > div > div.messenger_right__09f24__fndbc.border--left__09f24__Lt8WF.border-color--default__09f24__JbNoB > div > div > div.u-flex__09f24__rt07y.u-flex-column__09f24__m6LIn.u-flex-item__09f24__YuSEF.border-color--default__09f24__JbNoB > div.project-description-container__09f24__zySxi.u-flex-item__09f24__YuSEF.messenger-right.border-color--default__09f24__JbNoB > div > div > div.messages-grouped-by-time-view_group_time-sent__09f24__lCCiu.border-color--default__09f24__NPAKY > p")
         if quote_time:
             quote_time_string = f"Quote appeared at the time {quote_time[0].text}"
@@ -88,8 +84,13 @@ def build_message(name):
 
 
 def dog_check(driver):
-    html = driver.find_elements("css selector", "html")[0].get_attribute("outerHTML")
-    if "HTTP 504 - GATEWAY TIMEOUT" in html:
-        driver.refresh()
-        print("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
-        logging.info("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "html"))
+        )
+    finally:    
+        html = driver.find_elements("css selector", "html")[0].get_attribute("outerHTML")
+        if "HTTP 504 - GATEWAY TIMEOUT" in html:
+            driver.refresh()
+            print("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
+            logging.info("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
