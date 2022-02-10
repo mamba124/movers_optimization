@@ -15,7 +15,7 @@ logs = {}
 if __name__ == '__main__':
     auth = False
     driver = initialize_driver()
-    old_counter = 0
+    old_counter = -1
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
@@ -34,9 +34,11 @@ if __name__ == '__main__':
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
                             auth = login(driver, link)
+                    time.sleep(3)
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)
+                            time.sleep(1)
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
                             logging.info(f"Successful? {success}")
@@ -45,10 +47,11 @@ if __name__ == '__main__':
                             logs[counter]['processed/quote qublished'] = str(t2)
                             with open("stats.json", 'w') as f:
                                 json.dump(logs, f)
-                            old_counter = index
+                            
                             if success:
                                 now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
                                 driver.save_screenshot(f"screens/{now}.png")
+                    old_counter = index                                
 
                             #    if len(driver.window_handles) > 1:
                             #        driver.close()
