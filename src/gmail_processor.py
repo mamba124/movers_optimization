@@ -45,7 +45,6 @@ def send_message(service, timerange, user="trekmovers.alex@gmail.com"):
     try:
         message = (service.users().messages().send(userId=user, body=message)
                    .execute())
-        return message
     except Exception as ex:
         print (ex)        
 
@@ -55,7 +54,7 @@ def validate_token_time(service, token_path="secret_files/token.pickle"):
     created_at = datetime.strptime(time.ctime(os.path.getctime(token_path)), "%a %b %d %H:%M:%S %Y")
     timedelta = today - created_at
     if timedelta.seconds <= 2 * 60 * 60:
-        send_message(service, timerange=timedelta.seconds, user="trekmovers.alex@gmail.com")
+        send_message(service, timerange=timedelta.seconds, user="californiaexperessmail@gmail.com")
 
 
 
