@@ -2,6 +2,7 @@
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from google.auth.exceptions import RefreshError
 import pickle
 import os.path
 from bs4 import BeautifulSoup
@@ -11,17 +12,51 @@ import os
 from datetime import datetime
 import logging
 import socket
+from email.mime.text import MIMEText
+import base64
+
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.modify']
 
 
-def token_time_validation(default_delta=7, token_path="secret_files/token.pickle"):
+def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmail.com", subject="Acess token expires soon..", message_text='', timerange='2'):
+  """Create a message for an email.
+
+  Args:
+    sender: Email address of the sender.
+    to: Email address of the receiver.
+    subject: The subject of the email message.
+    message_text: The text of the email message.
+
+  Returns:
+    An object containing a base64url encoded email object.
+  """
+  message_text = f'Attention, expiration token soon will be refreshed!\n You will be asked to proceed manually. Token will expire in less than {timerange/3600} hours.\nIn case you want to refresh it now, delete Documents/movers_optimization/secret_files/token.pickle and wait for the pop-up window.'
+  message = MIMEText(message_text)
+  message['to'] = to
+  message['from'] = sender
+  message['subject'] = subject
+  return {'raw': base64.urlsafe_b64encode(message.as_string().encode("utf-8")).decode()}
+
+
+def send_message(service, timerange, user="trekmovers.alex@gmail.com"):
+    message = create_message(to=user, timerange=timerange)
+    try:
+        message = (service.users().messages().send(userId=user, body=message)
+                   .execute())
+        return message
+    except Exception as ex:
+        print (ex)        
+
+        
+def validate_token_time(service, default_delta=7, token_path="secret_files/token.pickle"):
     today = datetime.today()
     created_at = datetime.strptime(time.ctime(os.path.getctime(token_path)), "%a %b %d %H:%M:%S %Y")
     timedelta = today - created_at
-    if timedelta.days >= default_delta:
-        os.remove(token_path)
+    if timedelta.seconds <= 2 * 60 * 60:
+        send_message(service, timerange=timedelta.seconds, user="trekmovers.alex@gmail.com")
+
 
 
 def token_check(path='secret_files/token.pickle'):
@@ -33,9 +68,14 @@ def token_check(path='secret_files/token.pickle'):
 
 
 def refresh_token(creds, credentials_path="secret_files/credentials.json", token_path="secret_files/token.pickle"):
+    refresh_counter = 0
     if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-    else:
+        try:
+            creds.refresh(Request())
+        except RefreshError:
+            os.remove(token_path)
+            refresh_counter += 1
+    if refresh_counter or not creds:
         flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
         # Indicate where the API server will redirect the user after the user completes
         # the authorization flow. The redirect URI is required. The value must exactly
@@ -54,7 +94,7 @@ def refresh_token(creds, credentials_path="secret_files/credentials.json", token
             approval_prompt="force",
             # Enable incremental authorization. Recommended as a best practice.
             include_granted_scopes='true')
-        creds = flow.run_local_server(port=0)
+        creds = flow.run_local_server(port=0)         
     with open(token_path, 'wb') as token:
         pickle.dump(creds, token)
     return creds
@@ -63,9 +103,9 @@ def refresh_token(creds, credentials_path="secret_files/credentials.json", token
 def get_unread_mails():
     creds = token_check()
     if not creds or not creds.valid:  
-    #    token_time_validation()
         creds = refresh_token(creds)
     service = build('gmail', 'v1', credentials=creds)
+    validate_token_time(service)
     num_retries = 0
     response_valid = False
     while num_retries < 10: 
@@ -125,4 +165,4 @@ def parse_messages(messages, service):
                                                               body={'removeLabelIds': ['UNREAD']}).execute()
                             scraped_links.append(link)
     return scraped_links
-        
+
