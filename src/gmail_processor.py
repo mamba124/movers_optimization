@@ -50,7 +50,7 @@ def send_message(service, timerange, user="trekmovers.alex@gmail.com"):
         print (ex)        
 
         
-def validate_token_time(service, default_delta=7, token_path="secret_files/token.pickle"):
+def validate_token_time(service, token_path="secret_files/token.pickle"):
     today = datetime.today()
     created_at = datetime.strptime(time.ctime(os.path.getctime(token_path)), "%a %b %d %H:%M:%S %Y")
     timedelta = today - created_at

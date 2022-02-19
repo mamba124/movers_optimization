@@ -85,11 +85,9 @@ def build_message(name):
 
 def dog_check(driver):
     try:
-        print(f"wait for logo{datetime.now().time()}")
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "html"))
         )
-        print(f"got it.{datetime.now().time()}")
     finally:    
         html = driver.find_elements("css selector", "html")[0].get_attribute("outerHTML")
         if "HTTP 504 - GATEWAY TIMEOUT" in html:

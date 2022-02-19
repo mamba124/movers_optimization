@@ -36,8 +36,9 @@ class Creds:
     
 def test_tokentime_val():
     token_path = "tests/test_files/dummy_token"
-
-    gmail_processor.token_time_validation(0, token_path)
+    
+    service = Mock()
+    gmail_processor.validate_token_time(service, token_path)
     assert "dummy_token" not in os.listdir("tests/test_files/")
 
     with open(token_path, "w") as f:
@@ -83,4 +84,5 @@ def test_parse_message_invalid(mocked_enc):
 @patch("src.gmail_processor.get_encoded_message", return_value=template)
 def test_parse_message_none(mocked_enc):
     links = gmail_processor.parse_messages([{'id': '17e5b4abce9f0fb4', 'threadId': '17e5b4abce9f0fb4'}], mocked_google_service)
-    assert links == []    
+    assert links == []
+    
