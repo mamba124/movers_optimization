@@ -59,7 +59,7 @@ if __name__ == '__main__':
                 print(e)
                 if "Message: Failed to decode response from marionette" in str(e):
                     user="californiaexperessmail@gmail.com"
-                    mail = create_message(to=user, message="Something terrible happened with WebDriver! Please, restart bot manually")
+                    mail = create_message(to=user, message_text="Something terrible happened with WebDriver! Please, restart bot manually")
                     service = build_service()
                     send_message(service, mail, user="californiaexperessmail@gmail.com")
                 traceback.print_exc()
