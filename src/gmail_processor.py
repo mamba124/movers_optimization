@@ -55,7 +55,7 @@ def validate_token_time(service, token_path="secret_files/token.pickle"):
         user="californiaexperessmail@gmail.com"
         timerange = timedelta.seconds
         message_text = f'Attention, expiration token soon will be refreshed!\n You will be asked to proceed manually. Token will expire in less than {timerange/3600} hours.\nIn case you want to refresh it now, delete Documents/movers_optimization/secret_files/token.pickle and wait for the pop-up window.'
-        message = create_message(to=user, message=message_text)
+        message = create_message(to=user, message_text=message_text)
         send_message(service, message=message, user=user)
 
 
