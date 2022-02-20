@@ -20,7 +20,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.modify']
 
 
-def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmail.com", subject="Acess token expires soon..", message_text='', timerange='2'):
+def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmail.com", subject="Acess token expires soon..", message_text=''):
   """Create a message for an email.
 
   Args:
@@ -32,7 +32,6 @@ def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmai
   Returns:
     An object containing a base64url encoded email object.
   """
-  message_text = f'Attention, expiration token soon will be refreshed!\n You will be asked to proceed manually. Token will expire in less than {timerange/3600} hours.\nIn case you want to refresh it now, delete Documents/movers_optimization/secret_files/token.pickle and wait for the pop-up window.'
   message = MIMEText(message_text)
   message['to'] = to
   message['from'] = sender
@@ -40,10 +39,9 @@ def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmai
   return {'raw': base64.urlsafe_b64encode(message.as_string().encode("utf-8")).decode()}
 
 
-def send_message(service, timerange, user="trekmovers.alex@gmail.com"):
-    message = create_message(to=user, timerange=timerange)
+def send_message(service, mail, user="trekmovers.alex@gmail.com"):
     try:
-        message = (service.users().messages().send(userId=user, body=message)
+        message = (service.users().messages().send(userId=user, body=mail)
                    .execute())
     except Exception as ex:
         print (ex)        
@@ -54,8 +52,11 @@ def validate_token_time(service, token_path="secret_files/token.pickle"):
     created_at = datetime.strptime(time.ctime(os.path.getctime(token_path)), "%a %b %d %H:%M:%S %Y")
     timedelta = today - created_at
     if timedelta.seconds <= 2 * 60 * 60:
-        send_message(service, timerange=timedelta.seconds, user="californiaexperessmail@gmail.com")
-
+        user="californiaexperessmail@gmail.com"
+        timerange = timedelta.seconds
+        message_text = f'Attention, expiration token soon will be refreshed!\n You will be asked to proceed manually. Token will expire in less than {timerange/3600} hours.\nIn case you want to refresh it now, delete Documents/movers_optimization/secret_files/token.pickle and wait for the pop-up window.'
+        message = create_message(to=user, message=message_text)
+        send_message(service, message=message, user=user)
 
 
 def token_check(path='secret_files/token.pickle'):
@@ -99,11 +100,16 @@ def refresh_token(creds, credentials_path="secret_files/credentials.json", token
     return creds
 
 
-def get_unread_mails():
+def build_service():
     creds = token_check()
     if not creds or not creds.valid:  
         creds = refresh_token(creds)
     service = build('gmail', 'v1', credentials=creds)
+    return service
+
+
+def get_unread_mails():
+    service = build_service()
     validate_token_time(service)
     num_retries = 0
     response_valid = False

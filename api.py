@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from src.source_work import login, get_opportunity
 from src.preprocess_driver import initialize_driver
-from src.gmail_processor import get_unread_mails
+from src.gmail_processor import get_unread_mails, create_message, send_message, build_service
 from src.common import validate_launch_time
 import traceback
 import json
@@ -57,6 +57,11 @@ if __name__ == '__main__':
                         
             except Exception as e:
                 print(e)
+                if "Message: Failed to decode response from marionette" in str(e):
+                    user="californiaexperessmail@gmail.com"
+                    mail = create_message(to=user, message="Something terrible happened with WebDriver! Please, restart bot manually")
+                    service = build_service()
+                    send_message(service, mail, user="californiaexperessmail@gmail.com")
                 traceback.print_exc()
                 if "cookies.pickle" in os.listdir():
                     os.remove("cookies.pickle")
