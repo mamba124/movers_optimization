@@ -57,7 +57,7 @@ def validate_token_time(service, token_path="secret_files/token.pickle"):
         timerange = timedelta.seconds
         message_text = f'Attention, expiration token soon will be refreshed!\n You will be asked to proceed manually. Token will expire in less than {timerange/3600} hours.\nIn case you want to refresh it now, delete Documents/movers_optimization/secret_files/token.pickle and wait for the pop-up window.'
         message = create_message(to=user, message_text=message_text)
-        send_message(service, mail=message, user=user)
+      #  send_message(service, mail=message, user=user)
 
 
 def token_check(path='secret_files/token.pickle'):
@@ -141,7 +141,6 @@ def get_encoded_message(service, msg):
 
 def parse_messages(messages, service):
     scraped_links = []
-    subject = None
     # messages is a list of dictionaries where each dictionary contains a message id.
     if messages:
         for msg in messages:
@@ -155,21 +154,21 @@ def parse_messages(messages, service):
                 for d in headers:
                     if d['name'] == 'Subject':
                         subject = d['value']
-                if subject:
-                    if "job for" in subject:
-                        parts = payload.get('parts')
-                        for part in parts:
-                            mtype = part.get("mimeType")
-                            if mtype == "text/html":
-                                
-                                data = part['body']['data']
-                                decoded_data = urlsafe_b64decode(data)
-        
-                                soup = BeautifulSoup(decoded_data , "lxml")
-                                link = soup.findAll("a")[-4].get("href") #-4
-                                service.users().messages().modify(userId='me',
-                                                                  id=msg['id'],
-                                                                  body={'removeLabelIds': ['UNREAD']}).execute()
-                                scraped_links.append(link)
+
+                if "job for" in subject:
+                    parts = payload.get('parts')
+                    for part in parts:
+                        mtype = part.get("mimeType")
+                        if mtype == "text/html":
+                            
+                            data = part['body']['data']
+                            decoded_data = urlsafe_b64decode(data)
+    
+                            soup = BeautifulSoup(decoded_data , "lxml")
+                            link = soup.findAll("a")[-4].get("href") #-4
+                            service.users().messages().modify(userId='me',
+                                                              id=msg['id'],
+                                                              body={'removeLabelIds': ['UNREAD']}).execute()
+                            scraped_links.append(link)
     return scraped_links
 
