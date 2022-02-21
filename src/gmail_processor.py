@@ -36,6 +36,7 @@ def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmai
   message['to'] = to
   message['from'] = sender
   message['subject'] = subject
+  message['value'] = 'robot'
   return {'raw': base64.urlsafe_b64encode(message.as_string().encode("utf-8")).decode()}
 
 
@@ -140,6 +141,7 @@ def get_encoded_message(service, msg):
 
 def parse_messages(messages, service):
     scraped_links = []
+    subject = None
     # messages is a list of dictionaries where each dictionary contains a message id.
     if messages:
         for msg in messages:
@@ -153,21 +155,21 @@ def parse_messages(messages, service):
                 for d in headers:
                     if d['name'] == 'Subject':
                         subject = d['value']
-
-                if "job for" in subject:
-                    parts = payload.get('parts')
-                    for part in parts:
-                        mtype = part.get("mimeType")
-                        if mtype == "text/html":
-                            
-                            data = part['body']['data']
-                            decoded_data = urlsafe_b64decode(data)
-    
-                            soup = BeautifulSoup(decoded_data , "lxml")
-                            link = soup.findAll("a")[-4].get("href") #-4
-                            service.users().messages().modify(userId='me',
-                                                              id=msg['id'],
-                                                              body={'removeLabelIds': ['UNREAD']}).execute()
-                            scraped_links.append(link)
+                if subject:
+                    if "job for" in subject:
+                        parts = payload.get('parts')
+                        for part in parts:
+                            mtype = part.get("mimeType")
+                            if mtype == "text/html":
+                                
+                                data = part['body']['data']
+                                decoded_data = urlsafe_b64decode(data)
+        
+                                soup = BeautifulSoup(decoded_data , "lxml")
+                                link = soup.findAll("a")[-4].get("href") #-4
+                                service.users().messages().modify(userId='me',
+                                                                  id=msg['id'],
+                                                                  body={'removeLabelIds': ['UNREAD']}).execute()
+                                scraped_links.append(link)
     return scraped_links
 
