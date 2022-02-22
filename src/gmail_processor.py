@@ -52,12 +52,12 @@ def validate_token_time(service, token_path="secret_files/token.pickle"):
     today = datetime.today()
     created_at = datetime.strptime(time.ctime(os.path.getctime(token_path)), "%a %b %d %H:%M:%S %Y")
     timedelta = today - created_at
-    if timedelta.seconds <= 2 * 60 * 60:
+    if timedelta.seconds >= 6 * 24 * 60 * 60:
         user="californiaexperessmail@gmail.com"
-        timerange = timedelta.seconds
+        timerange = 7 * 24 * 60 * 60 - timedelta.seconds
         message_text = f'Attention, expiration token soon will be refreshed!\n You will be asked to proceed manually. Token will expire in less than {timerange/3600} hours.\nIn case you want to refresh it now, delete Documents/movers_optimization/secret_files/token.pickle and wait for the pop-up window.'
         message = create_message(to=user, message_text=message_text)
-      #  send_message(service, mail=message, user=user)
+        send_message(service, mail=message, user=user)
 
 
 def token_check(path='secret_files/token.pickle'):
@@ -96,8 +96,8 @@ def refresh_token(creds, credentials_path="secret_files/credentials.json", token
             # Enable incremental authorization. Recommended as a best practice.
             include_granted_scopes='true')
         creds = flow.run_local_server(port=0)         
-    with open(token_path, 'wb') as token:
-        pickle.dump(creds, token)
+        with open(token_path, 'wb') as token:
+            pickle.dump(creds, token)
     return creds
 
 
@@ -147,6 +147,8 @@ def parse_messages(messages, service):
             # Get the message from its id
             txt = get_encoded_message(service, msg)
             # Get value of 'payload' from dictionary 'txt'
+            if txt.get("snippet") and "expiration token" in txt.get("snippet"):
+                continue
             if txt:
                 payload = txt['payload']
                 headers = payload['headers']
