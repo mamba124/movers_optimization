@@ -147,7 +147,7 @@ def parse_messages(messages, service):
             # Get the message from its id
             txt = get_encoded_message(service, msg)
             # Get value of 'payload' from dictionary 'txt'
-            if txt.get("snippet") and "expiration token" in txt.get("snippet"):
+            if txt.get("snippet") and "Attention, " in txt.get("snippet"):
                 continue
             if txt:
                 payload = txt['payload']

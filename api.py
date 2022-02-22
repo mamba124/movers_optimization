@@ -10,7 +10,8 @@ import traceback
 import json
 
 start_time, end_time = validate_launch_time()
-logs = {}
+current_date = str(datetime.now().date())
+logs = {current_date: {}}
 
 if __name__ == '__main__':
     auth = False
@@ -22,15 +23,19 @@ if __name__ == '__main__':
                 scraped_links = get_unread_mails()
                 if scraped_links:
                     for link in scraped_links:
+                        fresh_date = str(datetime.now().date())
+                        if current_date != fresh_date:
+                            current_date = fresh_date
+                            logs[current_date] = {}
                         if not auth:
                             driver.get(link)
                             counter = 0
-                            logs[counter] = None
+                            logs[current_date][counter] = None
                         else:
                             driver.execute_script(f'''window.open("{link}","_blank");''')
                             counter += 1
-                        logs[counter] = {}
-                        logs[counter]["processed"] = str(datetime.now().time())
+                        logs[current_date][counter] = {}
+                        logs[current_date][counter]["processed"] = str(datetime.now().time())
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
                             auth = login(driver, link)
@@ -41,9 +46,9 @@ if __name__ == '__main__':
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
                             logging.info(f"Successful? {success}")
-                            logs[counter]['success'] = success
-                            logs[counter]['accessed'] = str(t1)
-                            logs[counter]['processed/quote qublished'] = str(t2)
+                            logs[current_date][counter]['success'] = success
+                            logs[current_date][counter]['accessed'] = str(t1)
+                            logs[current_date][counter]['processed/quote qublished'] = str(t2)
                             with open("stats.json", 'w') as f:
                                 json.dump(logs, f)
                             
@@ -59,7 +64,7 @@ if __name__ == '__main__':
                 print(e)
                 if "Message: Failed to decode response from marionette" in str(e):
                     user="californiaexperessmail@gmail.com"
-                    mail = create_message(to=user, message_text="Something terrible happened with WebDriver! Please, restart bot manually")
+                    mail = create_message(to=user, message_text="Attention, something terrible happened with WebDriver! Please, restart bot manually")
                     service = build_service()
                     send_message(service, mail, user="californiaexperessmail@gmail.com")
                 traceback.print_exc()
