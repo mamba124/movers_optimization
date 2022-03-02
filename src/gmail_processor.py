@@ -147,9 +147,10 @@ def parse_messages(messages, service):
             # Get the message from its id
             txt = get_encoded_message(service, msg)
             # Get value of 'payload' from dictionary 'txt'
-            if txt.get("snippet") and "Attention, " in txt.get("snippet"):
-                continue
+
             if txt:
+                if txt.get("snippet") and "Attention, " in txt.get("snippet"):
+                    continue
                 payload = txt['payload']
                 headers = payload['headers']
                 # Look for Subject and Sender Email in the headers

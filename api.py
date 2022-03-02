@@ -8,6 +8,7 @@ from src.gmail_processor import get_unread_mails, create_message, send_message, 
 from src.common import validate_launch_time
 import traceback
 import json
+import system
 
 start_time, end_time = validate_launch_time()
 current_date = str(datetime.now().date())
@@ -49,12 +50,14 @@ if __name__ == '__main__':
                             logs[current_date][counter]['success'] = success
                             logs[current_date][counter]['accessed'] = str(t1)
                             logs[current_date][counter]['processed/quote qublished'] = str(t2)
-                            with open("stats.json", 'w') as f:
+                            with open("stats.json", 'a') as f:
                                 json.dump(logs, f)
                             
                             #if success:
                             now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
-                            driver.save_screenshot(f"screens/{now}.png")
+                            #driver.save_screenshot(f"screens/{now}.png")
+                            if index >= 17:
+                                raise Exception("Too many tabs")
                     old_counter = index                                
 
                             #    if len(driver.window_handles) > 1:
@@ -67,6 +70,13 @@ if __name__ == '__main__':
                     mail = create_message(to=user, message_text="Attention, something terrible happened with WebDriver! Please, restart bot manually")
                     service = build_service()
                     send_message(service, mail, user="californiaexperessmail@gmail.com")
+                    raise Exception("No marionette for some reasons")
+                if "Too many tabs" in str(e):
+                    user="californiaexperessmail@gmail.com"
+                    mail = create_message(to=user, message_text="Attention, something terrible happened with WebDriver! Please, restart bot manually")
+                    service = build_service()
+                    send_message(service, mail, user="californiaexperessmail@gmail.com")
+                    raise Exception("Too many tabs")                    
                 traceback.print_exc()
                 if "cookies.pickle" in os.listdir():
                     os.remove("cookies.pickle")
