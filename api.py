@@ -8,7 +8,6 @@ from src.gmail_processor import get_unread_mails, create_message, send_message, 
 from src.common import validate_launch_time
 import traceback
 import json
-import system
 
 start_time, end_time = validate_launch_time()
 current_date = str(datetime.now().date())
