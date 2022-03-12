@@ -1,0 +1,13 @@
+version: "2.3"  # optional since v1.27.0
+services:
+    selenium:
+        image: selenium/standalone-firefox
+        environment:
+            TZ: Europe/Amsterdam
+        ports:
+            - "4444:4444"
+
+    bot:
+        build: .
+        depends_on:
+            - selenium
