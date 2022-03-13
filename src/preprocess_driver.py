@@ -62,7 +62,7 @@ def initialize_driver():
     })
     """
  #   driver = webdriver.Firefox(options=options)#proxy=proxy   
-    chrome_options = Options()
+    chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')

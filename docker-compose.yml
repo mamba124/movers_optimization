@@ -1,13 +1,14 @@
 version: "2.3"  # optional since v1.27.0
 services:
     selenium:
-        image: selenium/standalone-firefox
-        environment:
-            TZ: Europe/Amsterdam
+        image: selenium/standalone-chrome
         ports:
             - "4444:4444"
-
     bot:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile.selenium
         depends_on:
             - selenium
+        restart: on-failure
+
