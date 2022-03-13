@@ -5,7 +5,10 @@ services:
         ports:
             - "4444:4444"
     bot:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile.selenium
         depends_on:
             - selenium
+        restart: on-failure
 

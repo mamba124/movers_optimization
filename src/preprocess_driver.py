@@ -6,7 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 #CROSS_SELECTOR = ".dismiss-link__09f24__Q1RVn"
 #NOTIFICATION_SELECTOR = ".close-button__09f24__qgCyrs"
@@ -64,11 +63,10 @@ def initialize_driver():
     """
  #   driver = webdriver.Firefox(options=options)#proxy=proxy   
     chrome_options = webdriver.ChromeOptions()
-
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Remote("http://127.0.0.1:4444/wd/hub", options=chrome_options)
+    driver = webdriver.Chrome(chrome_options=chrome_options)
     driver.maximize_window()
     return driver
 
