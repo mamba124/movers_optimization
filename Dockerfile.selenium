@@ -33,4 +33,4 @@ COPY secret_files/ ./secret_files
 
 COPY . .
 
-CMD ["python", "api.py"]
+CMD ["bash", "restart_bot.sh"]

@@ -17,6 +17,7 @@ if __name__ == '__main__':
     auth = False
     driver = initialize_driver()
     old_counter = -1
+    print("start bot")
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
