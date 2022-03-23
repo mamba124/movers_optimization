@@ -19,7 +19,8 @@ def check_table():
         df.to_csv('stats.csv', index=False)
     else:
         df = pd.read_csv("stats.csv")
-        return df
+    return df
+
 
 def make_a_record(current_session, new_row):
     df = check_table()
