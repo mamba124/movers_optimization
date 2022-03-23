@@ -17,8 +17,12 @@ with open("secret_files/user_info.json", "r") as f:
     credentials = json.load(f)
 
 
+def wait(driver, time, element):
+    WebDriverWait(driver, time).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, element)))
+
+
 def login(driver, link):
-    time.sleep(3)
+    WebDriverWait(driver, 3).until(EC.visibility_of_all_elements_located((By.XPATH, "/html/body/yelp-react-root/div/div[2]/div/div[2]/div/div[1]/h1")))
     dog_check(driver)
     email_element = driver.find_elements("name", "email")
     pass_element = driver.find_elements("name", "password")
@@ -27,7 +31,8 @@ def login(driver, link):
         pass_element[0].send_keys(credentials["password"])
         driver.find_elements("tag name", "button")[0].click()
         print(f"Authenticated at time {datetime.now().time()}")
-        time.sleep(4)        
+        element = "#logo > a"
+        wait(driver, 5, element)
         return True
 
 
@@ -85,9 +90,7 @@ def build_message(name):
 
 def dog_check(driver):
     try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "html"))
-        )
+        wait(driver, 8, element="#logo > a")
     finally:    
         html = driver.find_elements("css selector", "html")[0].get_attribute("outerHTML")
         if "HTTP 504 - GATEWAY TIMEOUT" in html:
