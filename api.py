@@ -56,6 +56,7 @@ if __name__ == '__main__':
                             records.success = success
                             records.accessed = str(t1)
                             records.answered = str(t2)
+                            make_a_record(index, records)
                #             with open("stats.json", 'a') as f:
               #                  json.dump(logs, f)
                             
