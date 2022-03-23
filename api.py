@@ -5,13 +5,15 @@ from datetime import datetime
 from src.source_work import login, get_opportunity, wait
 from src.preprocess_driver import initialize_driver
 from src.gmail_processor import get_unread_mails, create_message, send_message, build_service
-from src.common import validate_launch_time
+from src.common import validate_launch_time, make_a_record, RecordClass
 import traceback
 import json
 
 start_time, end_time = validate_launch_time()
 current_date = str(datetime.now().date())
-logs = {current_date: {}}
+records = RecordClass()
+records.date = current_date
+#logs = {current_date: {}}
 
 if __name__ == '__main__':
     auth = False
@@ -27,16 +29,16 @@ if __name__ == '__main__':
                         fresh_date = str(datetime.now().date())
                         if current_date != fresh_date:
                             current_date = fresh_date
-                            logs[current_date] = {}
+                            records.date = current_date
                         if not auth:
                             driver.get(link)
                             counter = 0
-                            logs[current_date][counter] = None
                         else:
                             driver.execute_script(f'''window.open("{link}","_blank");''')
                             counter += 1
-                        logs[current_date][counter] = {}
-                        logs[current_date][counter]["processed"] = str(datetime.now().time())
+                 #       logs[current_date][counter] = {}
+                        records.processed = str(datetime.now().time())
+                        records.link = link
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
                             auth = login(driver, link)
@@ -51,22 +53,16 @@ if __name__ == '__main__':
                                 wait(driver, 4, css)
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
-                            logging.info(f"Successful? {success}")
-                            logs[current_date][counter]['success'] = success
-                            logs[current_date][counter]['accessed'] = str(t1)
-                            logs[current_date][counter]['processed/quote qublished'] = str(t2)
-                            with open("stats.json", 'a') as f:
-                                json.dump(logs, f)
+                            records.success = success
+                            records.accessed = str(t1)
+                            records.answered = str(t2)
+               #             with open("stats.json", 'a') as f:
+              #                  json.dump(logs, f)
                             
-                            #if success:
                             now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
-                            #driver.save_screenshot(f"screens/{now}.png")
                             if index >= 17:
                                 raise Exception("Too many tabs")
-                    old_counter = index                    
-
-                            #    if len(driver.window_handles) > 1:
-                            #        driver.close()
+                    old_counter = index
                         
             except Exception as e:
                 print(e)
@@ -78,7 +74,7 @@ if __name__ == '__main__':
                     raise Exception("No marionette for some reasons")
                 if "Too many tabs" in str(e):
                     user="californiaexperessmail@gmail.com"
-                    mail = create_message(to=user, message_text="Attention, something terrible happened with WebDriver! Please, restart bot manually")
+                    mail = create_message(to=user, message_text="Attention, Too many tabs on WebDriver. Bot restarts automatically..")
                     service = build_service()
                     send_message(service, mail, user="californiaexperessmail@gmail.com")
                     raise Exception("Too many tabs")                    
