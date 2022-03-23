@@ -17,6 +17,7 @@ def check_table():
     if "stats.csv" not in os.listdir():
         df = pd.DataFrame(columns=['Success', 'Date', 'Link', 'Processed Time', 'Accessed Time', 'Answered/Quote was posted at', 'Name if exists'])
         df.to_csv('stats.csv', index=False)
+        print("created new table")
     else:
         df = pd.read_csv("stats.csv")
     return df
@@ -31,8 +32,9 @@ def make_a_record(current_session, new_row):
                             'Accessed Time': new_row.accessed,
                             'Answered/Quote was posted at': new_row.answered,
                             'Name if exists': new_row.name})
-    df.append(new_row_df)
+    df = df.append(new_row_df, ignore_index=True)
     df.to_csv("stats.csv", index=False)
+    print("recorded!")
     
     
 class RecordClass:
