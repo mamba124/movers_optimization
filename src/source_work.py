@@ -22,7 +22,8 @@ def wait(driver, time, element):
 
 
 def login(driver, link):
-    WebDriverWait(driver, 3).until(EC.visibility_of_all_elements_located((By.XPATH, "/html/body/yelp-react-root/div/div[2]/div/div[2]/div/div[1]/h1")))
+    #WebDriverWait(driver, 6).until(EC.visibility_of_all_elements_located((By.XPATH, "/html/body/yelp-react-root/div/div[2]/div/div[2]/div/div[1]/h1")))
+    wait(driver, 3, ".css-lf8rwb")
     dog_check(driver)
     email_element = driver.find_elements("name", "email")
     pass_element = driver.find_elements("name", "password")
@@ -33,6 +34,7 @@ def login(driver, link):
         print(f"Authenticated at time {datetime.now().time()}")
         element = "#logo > a"
         wait(driver, 5, element)
+        time.sleep(2)
         return True
 
 
