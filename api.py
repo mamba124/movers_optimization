@@ -22,7 +22,6 @@ if __name__ == '__main__':
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
-                print("start bot")
                 scraped_links = get_unread_mails()
                 if scraped_links:
                     for link in scraped_links:
@@ -36,7 +35,6 @@ if __name__ == '__main__':
                         else:
                             driver.execute_script(f'''window.open("{link}","_blank");''')
                             counter += 1
-                 #       logs[current_date][counter] = {}
                         records.processed = str(datetime.now().time())
                         records.link = link
                         print(f"process link {link} at time {datetime.now().time()}")
@@ -60,9 +58,8 @@ if __name__ == '__main__':
                             records.accessed = str(t1)
                             records.answered = str(t2)
                             make_a_record(index, records)
-               #             with open("stats.json", 'a') as f:
-              #                  json.dump(logs, f)
-                            
+                            print(f"Accessed at {t1}")
+                            print(f"Answered at {t2}")
                             now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
                             if index >= 17:
                                 raise Exception("Too many tabs")
