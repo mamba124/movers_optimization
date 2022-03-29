@@ -22,13 +22,12 @@ def wait(driver, time, element):
 
 
 def login(driver, link):
-    #WebDriverWait(driver, 6).until(EC.visibility_of_all_elements_located((By.XPATH, "/html/body/yelp-react-root/div/div[2]/div/div[2]/div/div[1]/h1")))
     wait(driver, 3, ".css-lf8rwb")
     dog_check(driver)
     email_element = driver.find_elements("name", "email")
     pass_element = driver.find_elements("name", "password")
     if email_element and pass_element:
-        email_element[0].send_keys(credentials["username"])
+        email_element[0].send_keys(credentials["uparse_messagesparse_messagessername"])
         pass_element[0].send_keys(credentials["password"])
         driver.find_elements("tag name", "button")[0].click()
         print(f"Authenticated at time {datetime.now().time()}")
@@ -69,18 +68,14 @@ def get_opportunity(driver):
             quote_time_string = ""
         logging.info(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
         print(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
-    return success, t1, t2
+    return success, t1, t2, name
 
 
 def navigate_through_button_menu(driver):
-   # driver.find_element("css selector", OPTION_BUTTON).click()
     time.sleep(0.2)
     driver.find_element("css selector", RADIO_BUTTON).click()
     time.sleep(0.2)
-   # is_next = driver.find_elements("css selector", NEXT_BUTTON)
-  #  if is_next:
-    #    is_next[0].click()
- #   
+
 
 def build_message(name):
     if name:

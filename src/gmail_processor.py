@@ -157,21 +157,38 @@ def parse_messages(messages, service):
                 for d in headers:
                     if d['name'] == 'Subject':
                         subject = d['value']
-
-                if "job for" in subject:
-                    parts = payload.get('parts')
-                    for part in parts:
-                        mtype = part.get("mimeType")
-                        if mtype == "text/html":
-                            
-                            data = part['body']['data']
-                            decoded_data = urlsafe_b64decode(data)
-    
-                            soup = BeautifulSoup(decoded_data , "lxml")
-                            link = soup.findAll("a")[-4].get("href") #-4
-                            service.users().messages().modify(userId='me',
-                                                              id=msg['id'],
-                                                              body={'removeLabelIds': ['UNREAD']}).execute()
-                            scraped_links.append(link)
+                
+                relevant_parts = ["job for", "Message from"]
+                print(subject)
+                if relevant_parts[0] in subject:
+                    soup = decode_message(payload)
+                    if soup:
+                        link = soup.findAll("a")[-4].get("href") #-4
+                        service.users().messages().modify(userId='me',
+                                                          id=msg['id'],
+                                                          body={'removeLabelIds': ['UNREAD']}).execute()
+                        scraped_links.append(link)
+                elif relevant_parts[1] in subject:
+                    #
+                    decoded_data = decode_message(payload)
+                    if decoded_data:
+                        print(decoded_data)
     return scraped_links
 
+
+def decode_message(payload):
+    parts = payload.get('parts')
+    for part in parts:
+        mtype = part.get("mimeType")
+        if mtype == "text/html":
+            data = part['body']['data']
+            decoded_data = urlsafe_b64decode(data)
+            soup = BeautifulSoup(decoded_data , "lxml")
+            return soup
+
+
+def parse_direct_quote(subject, soup):
+    name = subject.split("Message from")[1].split("for")[0]
+    request_district = subject.split(" - ")[0]
+    
+    soup.findAll()
