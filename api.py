@@ -25,7 +25,7 @@ if __name__ == '__main__':
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
-                scraped_links, scraped_profiles = get_unread_mails()              
+                scraped_links, scraped_profiles = get_unread_mails()
                 if scraped_links:
                     for link, profile in zip(scraped_links, scraped_profiles):
                         if link:
@@ -47,7 +47,7 @@ if __name__ == '__main__':
                             print(f"process link {link} at time {datetime.now().time()}")
                             while not auth:
                                 auth = login(driver, link)
-                        elif profile:
+                        if profile:
                             yelpers_records.success = True
                             yelpers_records.date = current_date
                             
@@ -65,9 +65,10 @@ if __name__ == '__main__':
                                     wait(driver, 2, css)
                                 except:
                                     continue
-                            success, t1, t2 = get_opportunity(driver)
+                            success, t1, t2, name = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
                             records.success = success
+                            records.name = name
                             yelpers_records.success = success
                             records.accessed = str(t1)
                             records.answered = str(t2)

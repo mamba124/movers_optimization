@@ -27,7 +27,7 @@ def login(driver, link):
     email_element = driver.find_elements("name", "email")
     pass_element = driver.find_elements("name", "password")
     if email_element and pass_element:
-        email_element[0].send_keys(credentials["uparse_messagesparse_messagessername"])
+        email_element[0].send_keys(credentials["username"])
         pass_element[0].send_keys(credentials["password"])
         driver.find_elements("tag name", "button")[0].click()
         print(f"Authenticated at time {datetime.now().time()}")

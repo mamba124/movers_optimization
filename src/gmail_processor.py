@@ -116,6 +116,7 @@ def get_unread_mails():
     validate_token_time(service)
     num_retries = 0
     response_valid = False
+    scraped_links, scraped_profiles = [], []
     while num_retries < 10: 
         try: 
             unread_mail_list_request = service.users().messages().list(userId='me', q="is:unread").execute()
@@ -127,9 +128,8 @@ def get_unread_mails():
     if response_valid:
         messages = unread_mail_list_request.get('messages')
         gmail_agent = MessageGmail(service=service)
-        scraped_links, scraped_profiles = gmail_agent.parse_messages(messages)
-    else:
-        scraped_links = []
+        scraped_links, scraped_profiles = gmail_agent.parse_messages(messages, scraped_links, scraped_profiles)
+    print(scraped_links, "read")
     return scraped_links, scraped_profiles
 
 
@@ -149,10 +149,8 @@ class MessageGmail:
         self.decoded_data = None
         self.service = kwargs.get("service")
     
-    def process_decoded_data(self, msg):
-        scraped_links = []
-        scraped_profiles = []
-        soup = self.decode_message() 
+    def process_decoded_data(self, msg, scraped_links, scraped_profiles):
+        soup = self.decode_message()
         if soup:           
             if self.relevant_parts[0] in self.subject:
                 link = soup.findAll("a")[-4].get("href") #-4
@@ -161,7 +159,6 @@ class MessageGmail:
                                                   body={'removeLabelIds': ['UNREAD']}).execute()
                 scraped_links.append(link)     
                 scraped_profiles.append(None)
-
             elif self.relevant_parts[1] in self.subject:
                 link = soup.findAll("a")[-4].get("href") #-4
                 self.service.users().messages().modify(userId='me',
@@ -170,7 +167,7 @@ class MessageGmail:
                 direct_quote = self.parse_direct_quote(soup, link)
                 scraped_links.append(None)
                 scraped_profiles.append(direct_quote)
-
+        print(scraped_links, "process decoded")                
         return scraped_links, scraped_profiles
 
     def decode_message(self):
@@ -208,8 +205,7 @@ class MessageGmail:
         direct_quote = DirectQuote(name, request_district, moveto, link, movewhen, None, size, movefrom)
         return direct_quote
 
-    def parse_messages(self, messages):
-        scraped_links, scraped_profiles = [], []
+    def parse_messages(self, messages, scraped_links, scraped_profiles):
         # messages is a list of dictionaries where each dictionary contains a message id.
         if messages:
             for msg in messages:
@@ -229,6 +225,6 @@ class MessageGmail:
                     
                     self.relevant_parts = ["job for", "is requesting a quote"]
                     
-                    scraped_links, scraped_profiles = self.process_decoded_data(msg)
-                    
+                    scraped_links, scraped_profiles = self.process_decoded_data(msg, scraped_links, scraped_profiles)
+                    print(scraped_links, "parse_msg")
         return scraped_links, scraped_profiles
