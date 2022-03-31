@@ -25,35 +25,34 @@ if __name__ == '__main__':
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
-                scraped_links, scraped_profiles = get_unread_mails()
-                for profile  in scraped_profiles:
-                    if profile:
-                        yelpers_records.success = True
-                        yelpers_records.date = current_date
-                        
-                        yelpers_records.assign_direct_fields(profile)                        
-                        make_a_yelper_record(yelpers_records)                
+                scraped_links, scraped_profiles = get_unread_mails()              
                 if scraped_links:
                     for link, profile in zip(scraped_links, scraped_profiles):
-                        fresh_date = str(datetime.now().date())
-                        if current_date != fresh_date:
-                            current_date = fresh_date
-                            records.date = current_date
+                        if link:
+                            fresh_date = str(datetime.now().date())
+                            if current_date != fresh_date:
+                                current_date = fresh_date
+                                records.date = current_date
+                                yelpers_records.date = current_date
+                            if not auth:
+                                driver.get(link)
+                                counter = 0
+                            else:
+                                driver.execute_script(f'''window.open("{link}","_blank");''')
+                                counter += 1
+                            records.processed = str(datetime.now().time())
+                            records.link = link
+    
+    
+                            print(f"process link {link} at time {datetime.now().time()}")
+                            while not auth:
+                                auth = login(driver, link)
+                        elif profile:
+                            yelpers_records.success = True
                             yelpers_records.date = current_date
-                        if not auth:
-                            driver.get(link)
-                            counter = 0
-                        else:
-                            driver.execute_script(f'''window.open("{link}","_blank");''')
-                            counter += 1
-                        records.processed = str(datetime.now().time())
-                        records.link = link
-
-
-                        print(f"process link {link} at time {datetime.now().time()}")
-                        while not auth:
-                            auth = login(driver, link)
-
+                            
+                            yelpers_records.assign_direct_fields(profile)                        
+                            make_a_yelper_record(yelpers_records)  
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)
