@@ -14,10 +14,12 @@ import logging
 import socket
 from email.mime.text import MIMEText
 import base64
+from collections import namedtuple
 
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.modify']
+
 
 
 def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmail.com", subject="Acess token expires soon..", message_text=''):
@@ -124,10 +126,11 @@ def get_unread_mails():
             time.sleep(0.05*num_retries)
     if response_valid:
         messages = unread_mail_list_request.get('messages')
-        scraped_links = parse_messages(messages, service)
+        gmail_agent = MessageGmail(service=service)
+        scraped_links, scraped_profiles = gmail_agent.parse_messages(messages)
     else:
         scraped_links = []
-    return scraped_links
+    return scraped_links, scraped_profiles
 
 
 def get_encoded_message(service, msg):
@@ -139,56 +142,93 @@ def get_encoded_message(service, msg):
         print(ex)
 
 
-def parse_messages(messages, service):
-    scraped_links = []
-    # messages is a list of dictionaries where each dictionary contains a message id.
-    if messages:
-        for msg in messages:
-            # Get the message from its id
-            txt = get_encoded_message(service, msg)
-            # Get value of 'payload' from dictionary 'txt'
-
-            if txt:
-                if txt.get("snippet") and "Attention, " in txt.get("snippet"):
-                    continue
-                payload = txt['payload']
-                headers = payload['headers']
-                # Look for Subject and Sender Email in the headers
-                for d in headers:
-                    if d['name'] == 'Subject':
-                        subject = d['value']
-                
-                relevant_parts = ["job for", "Message from"]
-                print(subject)
-                if relevant_parts[0] in subject:
-                    soup = decode_message(payload)
-                    if soup:
-                        link = soup.findAll("a")[-4].get("href") #-4
-                        service.users().messages().modify(userId='me',
-                                                          id=msg['id'],
-                                                          body={'removeLabelIds': ['UNREAD']}).execute()
-                        scraped_links.append(link)
-                elif relevant_parts[1] in subject:
-                    #
-                    decoded_data = decode_message(payload)
-                    if decoded_data:
-                        print(decoded_data)
-    return scraped_links
-
-
-def decode_message(payload):
-    parts = payload.get('parts')
-    for part in parts:
-        mtype = part.get("mimeType")
-        if mtype == "text/html":
-            data = part['body']['data']
-            decoded_data = urlsafe_b64decode(data)
-            soup = BeautifulSoup(decoded_data , "lxml")
-            return soup
-
-
-def parse_direct_quote(subject, soup):
-    name = subject.split("Message from")[1].split("for")[0]
-    request_district = subject.split(" - ")[0]
+class MessageGmail:
+    def __init__(self, **kwargs):
+        self.payload = None
+        self.subject = None
+        self.decoded_data = None
+        self.service = kwargs.get("service")
     
-    soup.findAll()
+    def process_decoded_data(self, msg):
+        scraped_links = []
+        scraped_profiles = []
+        soup = self.decode_message() 
+        if soup:           
+            if self.relevant_parts[0] in self.subject:
+                link = soup.findAll("a")[-4].get("href") #-4
+                self.service.users().messages().modify(userId='me',
+                                                  id=msg['id'],
+                                                  body={'removeLabelIds': ['UNREAD']}).execute()
+                scraped_links.append(link)     
+                scraped_profiles.append(None)
+
+            elif self.relevant_parts[1] in self.subject:
+                direct_quote = self.parse_direct_quote(soup)
+                link = soup.findAll("a")[-4].get("href") #-4
+                self.service.users().messages().modify(userId='me',
+                                                  id=msg['id'],
+                                                  body={'removeLabelIds': ['UNREAD']}).execute()
+                scraped_links.append(link)     
+                scraped_profiles.append(direct_quote)
+
+        return scraped_links, scraped_profiles
+
+    def decode_message(self):
+        parts = self.payload.get('parts')
+        for part in parts:
+            mtype = part.get("mimeType")
+            if mtype == "text/html":
+                data = part['body']['data']
+                self.decoded_data = urlsafe_b64decode(data)
+       #         open("decoded.txt", 'wb').write(self.decoded_data)
+                soup = BeautifulSoup(self.decoded_data , "lxml")
+                return soup
+            
+    def parse_direct_quote(self, soup):
+        DirectQuote = namedtuple('DirectQuote', ['name', 'district', 'moveto', 'link', 'movewhen', 'quotedate', 'size', 'movefrom'])
+     #   name = subject.split("Message from")[1].split("for")[0]
+        name = self.subject.split(":")[1].split("is")[0]
+        if " - " in self.subject:
+            request_district = self.subject.split(" - ")[0]
+        else:
+            request_district = "Trek LA"
+        stripped = soup.findAll("div")[7].stripped_strings
+        stripped_list = [phrase for phrase in stripped]
+        for i, string in enumerate(stripped_list):
+            if "What is the size of your move" in string:
+                size = stripped_list[i + 1]
+            elif "zip code of your current location" in string:
+                movefrom = stripped_list[i+1]
+            elif "zip code at your destination" in string:
+                moveto = stripped_list[i+1]
+            elif "When do you want to move" in string:
+                movewhen = stripped_list[i+1]
+        
+
+        direct_quote = DirectQuote(name, request_district, moveto, None, movewhen, None, size, movefrom)
+        return direct_quote
+
+    def parse_messages(self, messages):
+        scraped_links, scraped_profiles = [], []
+        # messages is a list of dictionaries where each dictionary contains a message id.
+        if messages:
+            for msg in messages:
+                # Get the message from its id
+                txt = get_encoded_message(self.service, msg)
+                # Get value of 'payload' from dictionary 'txt'
+    
+                if txt:
+                    if txt.get("snippet") and "Attention, " in txt.get("snippet"):
+                        continue
+                    self.payload = txt['payload']
+                    headers = self.payload['headers']
+                    # Look for Subject and Sender Email in the headers
+                    for d in headers:
+                        if d['name'] == 'Subject':
+                            self.subject = d['value']
+                    
+                    self.relevant_parts = ["job for", "is requesting a quote"]
+                    
+                    scraped_links, scraped_profiles = self.process_decoded_data(msg)
+                    
+        return scraped_links, scraped_profiles

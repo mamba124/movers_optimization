@@ -5,14 +5,17 @@ from datetime import datetime
 from src.source_work import login, get_opportunity, wait
 from src.preprocess_driver import initialize_driver
 from src.gmail_processor import get_unread_mails, create_message, send_message, build_service
-from src.common import validate_launch_time, make_a_record, RecordClass
+from src.common import validate_launch_time, make_a_record, RecordClass, make_a_yelper_record
 import traceback
-import json
 
 start_time, end_time = validate_launch_time()
 current_date = str(datetime.now().date())
 records = RecordClass()
 records.date = current_date
+
+yelpers_records = RecordClass()
+records.date = current_date
+
 #logs = {current_date: {}}
 
 if __name__ == '__main__':
@@ -22,13 +25,14 @@ if __name__ == '__main__':
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
-                scraped_links = get_unread_mails()
+                scraped_links, scraped_profiles = get_unread_mails()
                 if scraped_links:
-                    for link in scraped_links:
+                    for link, profile in zip(scraped_links, scraped_profiles):
                         fresh_date = str(datetime.now().date())
                         if current_date != fresh_date:
                             current_date = fresh_date
                             records.date = current_date
+                            yelpers_records.date = current_date
                         if not auth:
                             driver.get(link)
                             counter = 0
@@ -37,6 +41,9 @@ if __name__ == '__main__':
                             counter += 1
                         records.processed = str(datetime.now().time())
                         records.link = link
+                        yelpers_records.link = link
+                        yelpers_records.assign_direct_fields(profile)
+
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
                             auth = login(driver, link)
@@ -55,9 +62,11 @@ if __name__ == '__main__':
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
                             records.success = success
+                            yelpers_records.success = success
                             records.accessed = str(t1)
                             records.answered = str(t2)
                             make_a_record(index, records)
+                            make_a_yelper_record(yelpers_records)
                             print(f"Accessed at {t1}")
                             print(f"Answered at {t2}")
                             now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
