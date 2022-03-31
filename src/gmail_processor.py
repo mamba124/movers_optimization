@@ -163,12 +163,12 @@ class MessageGmail:
                 scraped_profiles.append(None)
 
             elif self.relevant_parts[1] in self.subject:
-                direct_quote = self.parse_direct_quote(soup)
                 link = soup.findAll("a")[-4].get("href") #-4
                 self.service.users().messages().modify(userId='me',
                                                   id=msg['id'],
                                                   body={'removeLabelIds': ['UNREAD']}).execute()
-                scraped_links.append(link)     
+                direct_quote = self.parse_direct_quote(soup, link)
+                scraped_links.append(None)
                 scraped_profiles.append(direct_quote)
 
         return scraped_links, scraped_profiles
@@ -184,7 +184,7 @@ class MessageGmail:
                 soup = BeautifulSoup(self.decoded_data , "lxml")
                 return soup
             
-    def parse_direct_quote(self, soup):
+    def parse_direct_quote(self, soup, link):
         DirectQuote = namedtuple('DirectQuote', ['name', 'district', 'moveto', 'link', 'movewhen', 'quotedate', 'size', 'movefrom'])
      #   name = subject.split("Message from")[1].split("for")[0]
         name = self.subject.split(":")[1].split("is")[0]
@@ -205,7 +205,7 @@ class MessageGmail:
                 movewhen = stripped_list[i+1]
         
 
-        direct_quote = DirectQuote(name, request_district, moveto, None, movewhen, None, size, movefrom)
+        direct_quote = DirectQuote(name, request_district, moveto, link, movewhen, None, size, movefrom)
         return direct_quote
 
     def parse_messages(self, messages):

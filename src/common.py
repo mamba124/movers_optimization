@@ -65,7 +65,8 @@ def make_a_yelper_record(new_row):
                             "Destination ZIP": new_row.moveto,
                             "TrekMovers District": new_row.district,
                             "Moving date": new_row.movewhen,
-                            "Size": new_row.size})
+                            "Size": new_row.size,
+                            "Direct?": new_row.direct})
     df = df.append(new_row_df, ignore_index=True)
     df.to_csv("yelpers_stats.csv", index=False)
     print("yelpers stats recorded!")
@@ -85,6 +86,7 @@ class RecordClass:
         self.district = None
         self.size = None
         self.movewhen = None
+        self.direct = False
     
     def assign_direct_fields(self, direct_quote):
         self.name = direct_quote.name
@@ -93,6 +95,7 @@ class RecordClass:
         self.district = direct_quote.district
         self.size = direct_quote.size
         self.movewhen = direct_quote.movewhen
+        self.direct = True
 
     def parse_link_for_district(self):
         if "_wnBeUDshFbA3kh-MAqa6g" in self.link:
