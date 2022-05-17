@@ -40,16 +40,17 @@ if __name__ == '__main__':
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
                             auth = login(driver, link)
+                    print(driver.window_handles)
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)
                             try:
-                                css = ".heading--h2__09f24__WbmpW"
+                                css = "#logo"
                                 wait(driver, 8, css)
                             except:
                                 try:
-                                    css = "body > yelp-react-root > div:nth-child(1) > div.messenger-container__09f24__qt8O4 > div > div.messenger_left__09f24__qGRD1.border-color--default__09f24__JbNoB > div.messenger_left_middle__09f24__uFP6q.border-color--default__09f24__JbNoB > div > div.padding-t2__09f24__Y6duA.padding-r3__09f24__eaF7p.padding-b2__09f24__F0z5y.padding-l3__09f24__IOjKY.border--top__09f24__exYYb.border-color--default__09f24__NPAKY > div > div > h4"
-                                    wait(driver, 2, css)
+                                    NAME_SELECTOR = "span.fs-block > a:nth-child(1)"
+                                    wait(driver, 2, NAME_SELECTOR)
                                 except:
                                     continue
                             success, t1, t2 = get_opportunity(driver)

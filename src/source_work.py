@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from src.inbox_selectors import NEXT_BUTTON, RADIO_BUTTON, NAME_SELECTOR, \
                                 NEED_MORE_INFO, ANSWER_BUTTON, \
                                 READ_MORE_INBOX, EXPIRED_TIME_QUOTE, \
-                                YELP_WELCOME, LOGO
+                                YELP_WELCOME, LOGO, MSG_AREA
 
 from src.inbox_selectors import FIRST_EXPIRED, NEXT_ACTIVE #todo add logic that checks if possibility to get fresh quote
 
@@ -38,7 +38,7 @@ def login(driver, link):
         driver.find_elements("tag name", "button")[0].click()
         print(f"Authenticated at time {datetime.now().time()}")
         wait(driver, 5, LOGO)
-        time.sleep(2)
+       # time.sleep(2)
         return True
 
 
@@ -49,16 +49,19 @@ def get_opportunity(driver):
     t1 = datetime.now().time()
     t2 = None
     print(f"Accessed at {datetime.now().time()}")
+    html = driver.find_element("css selector", "html").get_attribute("innerHTML")
+    if "Nearby Jobs Details" not in html:
+        elements = driver.find_elements("css selector", READ_MORE_INBOX)
+        if elements:
+            elements[0].click()
+            dog_check(driver)
     try:
-        driver.find_element("css selector", READ_MORE_INBOX).click()
-        dog_check(driver)
-
         driver.find_element("css selector", NEED_MORE_INFO).click()
         name = driver.find_elements("css selector", NAME_SELECTOR)
         navigate_through_button_menu(driver)            
 
         message_text = build_message(name)
-        message = driver.find_element("css selector", "#modal-portal-container > div:nth-child(3) > div > div > div > div.border-color--default__09f24__NPAKY > div > div > div.css-40lu3n.padding-t3__09f24__TMrIW.padding-r3__09f24__eaF7p.padding-b4__09f24__q6U6q.padding-l3__09f24__IOjKY.border-color--default__09f24__NPAKY > div.css-fwucvt.margin-b2__09f24__CEMjT.padding-b1__09f24__mrxd5.border-color--default__09f24__NPAKY > div > div.css-iv6qc5.margin-t2__09f24__b0bxj.padding-t2__09f24__Y6duA.border--top__09f24__exYYb.border-color--default__09f24__NPAKY > div.textarea-wrapper__09f24__oXx9N.border-color--default__09f24__NPAKY > textarea")
+        message = driver.find_element("css selector", MSG_AREA)
         message.send_keys(message_text)       
         
         driver.find_element("css selector", ANSWER_BUTTON).click()
