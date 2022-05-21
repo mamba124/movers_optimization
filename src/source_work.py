@@ -9,10 +9,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from src.inbox_selectors import NEXT_BUTTON, RADIO_BUTTON, NAME_SELECTOR, \
                                 NEED_MORE_INFO, ANSWER_BUTTON, \
-                                READ_MORE_INBOX, EXPIRED_TIME_QUOTE, \
+                                SEE_FIRST, EXPIRED_TIME_QUOTE, \
                                 YELP_WELCOME, LOGO, MSG_AREA
 
-from src.inbox_selectors import FIRST_EXPIRED, NEXT_ACTIVE #todo add logic that checks if possibility to get fresh quote
+from src.inbox_selectors import NEXT_ACTIVE #todo add logic that checks if possibility to get fresh quote
 
 
 def check_if_expired_from_page(driver):
@@ -37,26 +37,27 @@ def login(driver, link):
         pass_element[0].send_keys(credentials["password"])
         driver.find_elements("tag name", "button")[0].click()
         print(f"Authenticated at time {datetime.now().time()}")
-        wait(driver, 5, LOGO)
-       # time.sleep(2)
+        wait(driver, 10, LOGO)
         return True
 
 
 def get_opportunity(driver):
     dog_check(driver)
-    time.sleep(0.1)
     success = False
     t1 = datetime.now().time()
     t2 = None
     print(f"Accessed at {datetime.now().time()}")
     html = driver.find_element("css selector", "html").get_attribute("innerHTML")
     if "Nearby Jobs Details" not in html:
-        elements = driver.find_elements("css selector", READ_MORE_INBOX)
+        elements = driver.find_elements("css selector", SEE_FIRST)
         if elements:
             elements[0].click()
             dog_check(driver)
     try:
-        driver.find_element("css selector", NEED_MORE_INFO).click()
+        more_info = driver.find_elements("css selector", NEED_MORE_INFO)
+        if more_info:
+            time.sleep(5)
+        more_info[0].click()
         name = driver.find_elements("css selector", NAME_SELECTOR)
         navigate_through_button_menu(driver)            
 
