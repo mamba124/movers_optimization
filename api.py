@@ -46,11 +46,15 @@ if __name__ == '__main__':
                             driver.switch_to.window(handler)
                             try:
                                 NAME_SELECTOR = "body > yelp-react-root > div:nth-child(1) > div.responsive.responsive-biz.border-color--default__09f24__NPAKY > div > div.biz-container-full-screen__09f24__fhNa6.border-color--default__09f24__NPAKY > div > div.responsive-biz.css-b95f0i.margin-b4__09f24__jfnOz.margin-sm-r0__09f24__WfNsG.margin-sm-b1__09f24__gvqD8.margin-md-r2__09f24__r7Qz5.border-color--default__09f24__NPAKY > div.css-s7x2v8.border-color--default__09f24__NPAKY > div.css-5739yy.border-color--default__09f24__NPAKY > div > div.css-0.padding-t3__09f24__TMrIW.padding-r3__09f24__eaF7p.padding-b3__09f24__S8R2d.padding-l3__09f24__IOjKY.border--top__09f24__exYYb.border--right__09f24__X7Tln.border--left__09f24__DMOkM.border-color--default__09f24__NPAKY > div > div > div.arrange-unit__09f24__rqHTg.arrange-unit-fill__09f24__CUubG.border-color--default__09f24__NPAKY > div.user-passport-info.border-color--default__09f24__NPAKY > span > a"
-                                wait(driver, 12, NAME_SELECTOR)
-                            except:
+                                print("wait name selector")
+                                wait(driver, 30, NAME_SELECTOR)
+                            except Exception as ex:
+                                print(datetime.now())
+                                print(f"something happened: {ex}")
                                 continue
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
+                            driver.save_screenshot(f"screens/{t1}.png")
                             records.success = success
                             records.accessed = str(t1)
                             records.answered = str(t2)
