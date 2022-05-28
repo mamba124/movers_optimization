@@ -41,20 +41,22 @@ def login(driver, link):
         return True
 
 
-def get_opportunity(driver):
-    dog_check(driver)
+def get_opportunity(driver): 
+    dog_check(driver) 
     success = False
     t1 = datetime.now().time()
     t2 = None
     print(f"Accessed at {datetime.now().time()}")
     html = driver.find_element("css selector", "html").get_attribute("innerHTML")
     if "Nearby Jobs Details" not in html:
+        print("nearby jobs details fork")
         elements = driver.find_elements("css selector", SEE_FIRST)
         if elements:
             elements[0].click()
             dog_check(driver)
     try:
         more_info = driver.find_elements("css selector", NEED_MORE_INFO)
+        print(more_info)
         if more_info:
             time.sleep(5)
         more_info[0].click()
@@ -84,7 +86,10 @@ def get_opportunity(driver):
 
 
 def navigate_through_button_menu(driver):
-    driver.find_element("css selector", RADIO_BUTTON).click()
+    radio = driver.find_elements("css selector", RADIO_BUTTON)
+    print("radio")
+    print(radio)
+    radio[0].click()
     time.sleep(0.2)
     is_next = driver.find_elements("css selector", NEXT_BUTTON)
     if is_next:
@@ -100,11 +105,15 @@ def build_message(name):
 
 
 def dog_check(driver):
+    print("dog check start")
     try:
+        print("try find logo in dogcheck")
         wait(driver, 8, element=LOGO)
-    finally:    
+    finally:
+        print("go gateway")
         html = driver.find_elements("css selector", "html")[0].get_attribute("outerHTML")
-        if "HTTP 504 - GATEWAY TIMEOUT" in html:
+        if "HTTP 504 - GATEWAY TIMEOUT" in html or "This page is having" in html:
             driver.refresh()
             print("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
             logging.info("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
+    print("dog check finish")
