@@ -57,8 +57,8 @@ def get_opportunity(driver):
     try:
         more_info = driver.find_elements("css selector", NEED_MORE_INFO)
         print(more_info)
-        if more_info:
-            time.sleep(5)
+#        if more_info:
+#            time.sleep(5)
         more_info[0].click()
         name = driver.find_elements("css selector", NAME_SELECTOR)
         navigate_through_button_menu(driver)            
@@ -86,12 +86,15 @@ def get_opportunity(driver):
 
 
 def navigate_through_button_menu(driver):
+    time.sleep(5)
     radio = driver.find_elements("css selector", RADIO_BUTTON)
     print("radio")
     print(radio)
+ 
     radio[0].click()
-    time.sleep(0.2)
+    time.sleep(1)
     is_next = driver.find_elements("css selector", NEXT_BUTTON)
+    print(is_next)
     if is_next:
         is_next[0].click()
 
