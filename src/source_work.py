@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from src.inbox_selectors import NEXT_BUTTON, RADIO_BUTTON, NAME_SELECTOR, \
                                 NEED_MORE_INFO, ANSWER_BUTTON, \
                                 SEE_FIRST, EXPIRED_TIME_QUOTE, \
-                                YELP_WELCOME, LOGO, MSG_AREA, OPPORTUNITIES
+                                YELP_WELCOME, LOGO, MSG_AREA, NEARBY_DETAILS
 
 from src.inbox_selectors import NEXT_ACTIVE #todo add logic that checks if possibility to get fresh quote
 
@@ -40,14 +40,14 @@ def login(driver, link, logged=True):
             pass_element[0].send_keys(credentials["password"])
             driver.find_elements("tag name", "button")[0].click()
     try:
-        wait(driver, 15, OPPORTUNITIES)
+        wait(driver, 15, YELP_WELCOME)
         if driver.find_elements("css selector", YELP_WELCOME):
             print("Alarm! Captha")
         else:
             logged = True
             print(f"Authenticated at time {datetime.now().time()}")
     except:
-        logged = False        
+        logged = True        
     return logged
 
 def get_opportunity(driver): 
