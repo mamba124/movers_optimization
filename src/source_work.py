@@ -36,6 +36,9 @@ def login(driver, link):
         email_element[0].send_keys(credentials["username"])
         pass_element[0].send_keys(credentials["password"])
         driver.find_elements("tag name", "button")[0].click()
+        if driver.find_elements("css selector", YELP_WELCOME):
+            print("Alarm! Captha")
+            return False
         print(f"Authenticated at time {datetime.now().time()}")
         wait(driver, 10, LOGO)
         return True
@@ -56,9 +59,8 @@ def get_opportunity(driver):
             dog_check(driver)
     try:
         more_info = driver.find_elements("css selector", NEED_MORE_INFO)
-        print(more_info)
-#        if more_info:
-#            time.sleep(5)
+        if more_info:
+            time.sleep(5)
         more_info[0].click()
         name = driver.find_elements("css selector", NAME_SELECTOR)
         navigate_through_button_menu(driver)            
@@ -70,7 +72,6 @@ def get_opportunity(driver):
         driver.find_element("css selector", ANSWER_BUTTON).click()
         t2 = datetime.now().time()
         logging.info(f"Answered at {datetime.now().time()}")
-        print(f"Answered at {datetime.now().time()}")
         success = True
     except Exception as ex:
         print(ex)
@@ -88,13 +89,10 @@ def get_opportunity(driver):
 def navigate_through_button_menu(driver):
     time.sleep(5)
     radio = driver.find_elements("css selector", RADIO_BUTTON)
-    print("radio")
-    print(radio)
  
     radio[0].click()
     time.sleep(1)
     is_next = driver.find_elements("css selector", NEXT_BUTTON)
-    print(is_next)
     if is_next:
         is_next[0].click()
 

@@ -41,6 +41,11 @@ if __name__ == '__main__':
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
                             auth = login(driver, link)
+                            if auth == False:
+                                user="californiaexperessmail@gmail.com"
+                                mail = create_message(to=user, message_text="DEAL WITH CAPTCHA")
+                                service = build_service()
+                                send_message(service, mail, user=user)                                
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)
@@ -56,6 +61,7 @@ if __name__ == '__main__':
                                     print("wait name selector")
                                     wait(driver, 20, NAME_SELECTOR)
                             except Exception as ex:
+                                print(driver.find_element("css selector", "html").get_attribute("innerHTML"))
                                 print(f"something happened")
                                 print(ex)
                                 continue
