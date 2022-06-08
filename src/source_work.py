@@ -39,13 +39,15 @@ def login(driver, link, logged=True):
             email_element[0].send_keys(credentials["username"])
             pass_element[0].send_keys(credentials["password"])
             driver.find_elements("tag name", "button")[0].click()
-    if driver.find_elements("css selector", YELP_WELCOME):
-        print("Alarm! Captha")
-        logged = False
-    else:
-        logged = True
-        print(f"Authenticated at time {datetime.now().time()}")
-        wait(driver, 10, LOGO)
+    try:
+        wait(driver, 15, LOGO)
+        if driver.find_elements("css selector", YELP_WELCOME):
+            print("Alarm! Captha")
+        else:
+            logged = True
+            print(f"Authenticated at time {datetime.now().time()}")
+    except:
+        logged = False        
     return logged
 
 def get_opportunity(driver): 
