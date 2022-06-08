@@ -17,6 +17,7 @@ records.date = current_date
 
 if __name__ == '__main__':
     auth = False
+    logged = True
     driver = initialize_driver()
     old_counter = -1
     print("start bot")
@@ -40,12 +41,10 @@ if __name__ == '__main__':
                         records.link = link
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
-                            auth = login(driver, link)
+                            auth = login(driver, link, logged)
+                            logged = auth
                             if auth == False:
-                                user="californiaexperessmail@gmail.com"
-                                mail = create_message(to=user, message_text="DEAL WITH CAPTCHA")
-                                service = build_service()
-                                send_message(service, mail, user=user)                                
+                                time.sleep(5)
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)

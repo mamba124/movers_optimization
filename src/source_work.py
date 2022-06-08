@@ -26,23 +26,27 @@ with open("secret_files/user_info.json", "r") as f:
 def wait(driver, time, element):
     WebDriverWait(driver, time).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, element)))
 
-
-def login(driver, link):
+#1 first time. logged is true, but captcha
+#2 captcha, logged is false, captcha still
+#3 captcha, l is false, captcha is off, logged becomes true
+def login(driver, link, logged=True):
     wait(driver, 3, YELP_WELCOME)
     dog_check(driver)
-    email_element = driver.find_elements("name", "email")
-    pass_element = driver.find_elements("name", "password")
-    if email_element and pass_element:
-        email_element[0].send_keys(credentials["username"])
-        pass_element[0].send_keys(credentials["password"])
-        driver.find_elements("tag name", "button")[0].click()
-        if driver.find_elements("css selector", YELP_WELCOME):
-            print("Alarm! Captha")
-            return False
+    if logged:
+        email_element = driver.find_elements("name", "email")
+        pass_element = driver.find_elements("name", "password")
+        if email_element and pass_element:
+            email_element[0].send_keys(credentials["username"])
+            pass_element[0].send_keys(credentials["password"])
+            driver.find_elements("tag name", "button")[0].click()
+    if driver.find_elements("css selector", YELP_WELCOME):
+        print("Alarm! Captha")
+        logged = False
+    else:
+        logged = True
         print(f"Authenticated at time {datetime.now().time()}")
         wait(driver, 10, LOGO)
-        return True
-
+    return logged
 
 def get_opportunity(driver): 
     dog_check(driver) 

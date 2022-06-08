@@ -51,7 +51,7 @@ def initialize_driver():
         raise Exception("all attempts exceeded, couldn't get proxy")
     """ 
     options = Options()
-    options.headless = True
+ #   options.headless = True
     """
     proxy = Proxy({
          'proxyType': ProxyType.MANUAL,
@@ -61,12 +61,12 @@ def initialize_driver():
          'noProxy': '' # set this value as desired
     })
     """
- #   driver = webdriver.Firefox(options=options)#proxy=proxy   
+    driver = webdriver.Firefox(options=options)#proxy=proxy   
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Remote("http://selenium:4444", options=chrome_options)
+  #  driver = webdriver.Remote("http://selenium:4444", options=chrome_options)
     driver.maximize_window()
     return driver
 
