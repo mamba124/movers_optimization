@@ -41,7 +41,7 @@ def login(driver, link, logged=True):
             driver.find_elements("class name", "css-cednmx")[0].click()
     try:
         wait(driver, 15, YELP_WELCOME)
-        if driver.find_elements("css selector", YELP_WELCOME):
+        if driver.find_elements("name", "password"):
             print("Alarm! Captha")
             logged = False
         else:
