@@ -43,6 +43,7 @@ def login(driver, link, logged=True):
         wait(driver, 15, YELP_WELCOME)
         if driver.find_elements("css selector", YELP_WELCOME):
             print("Alarm! Captha")
+            logged = False
         else:
             logged = True
             print(f"Authenticated at time {datetime.now().time()}")
