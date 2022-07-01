@@ -38,7 +38,7 @@ def login(driver, link, logged=True):
         if email_element and pass_element:
             email_element[0].send_keys(credentials["username"])
             pass_element[0].send_keys(credentials["password"])
-            driver.find_elements("tag name", "button")[0].click()
+            driver.find_elements("class name", "css-cednmx")[0].click()
     try:
         wait(driver, 15, YELP_WELCOME)
         if driver.find_elements("css selector", YELP_WELCOME):
