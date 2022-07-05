@@ -17,8 +17,10 @@ records.date = current_date
 
 if __name__ == '__main__':
     auth = False
+    logged = True
     driver = initialize_driver()
     old_counter = -1
+    print("start bot")
     while True:
         if datetime.now().hour >= start_time or datetime.now().hour <= end_time:
             try:
@@ -39,21 +41,28 @@ if __name__ == '__main__':
                         records.link = link
                         print(f"process link {link} at time {datetime.now().time()}")
                         while not auth:
-                            auth = login(driver, link)
+                            auth = login(driver, link, logged)
+                            logged = auth
+                            if auth == False:
+                                user="californiaexperessmail@gmail.com"
+                                mail = create_message(to=user, message_text="Attention, DEAL WITH CAPTCHA")
+                                service = build_service()
+                                send_message(service, mail, user=user)                                       
+                                time.sleep(5)
                     for index, handler in enumerate(driver.window_handles):
                         if index > old_counter:
                             driver.switch_to.window(handler)
                             try:
-                                css = ".heading--h2__09f24__WbmpW"
-                                wait(driver, 8, css)
-                            except:
-                                try:
-                                    css = "body > yelp-react-root > div:nth-child(1) > div.messenger-container__09f24__qt8O4 > div > div.messenger_left__09f24__qGRD1.border-color--default__09f24__JbNoB > div.messenger_left_middle__09f24__uFP6q.border-color--default__09f24__JbNoB > div > div.padding-t2__09f24__Y6duA.padding-r3__09f24__eaF7p.padding-b2__09f24__F0z5y.padding-l3__09f24__IOjKY.border--top__09f24__exYYb.border-color--default__09f24__NPAKY > div > div > h4"
-                                    wait(driver, 2, css)
-                                except:
-                                    continue
+                                NAME_SELECTOR = "body > yelp-react-root > div:nth-child(1) > div.responsive.responsive-biz.border-color--default__09f24__NPAKY > div > div.biz-container-full-screen__09f24__fhNa6.border-color--default__09f24__NPAKY > div > div.responsive-biz.css-b95f0i.margin-b4__09f24__jfnOz.margin-sm-r0__09f24__WfNsG.margin-sm-b1__09f24__gvqD8.margin-md-r2__09f24__r7Qz5.border-color--default__09f24__NPAKY > div.css-s7x2v8.border-color--default__09f24__NPAKY > div.css-5739yy.border-color--default__09f24__NPAKY > div > div.css-0.padding-t3__09f24__TMrIW.padding-r3__09f24__eaF7p.padding-b3__09f24__S8R2d.padding-l3__09f24__IOjKY.border--top__09f24__exYYb.border--right__09f24__X7Tln.border--left__09f24__DMOkM.border-color--default__09f24__NPAKY > div > div > div.arrange-unit__09f24__rqHTg.arrange-unit-fill__09f24__CUubG.border-color--default__09f24__NPAKY > div.user-passport-info.border-color--default__09f24__NPAKY > span > a"
+                                print("wait name selector")
+                                wait(driver, 15, NAME_SELECTOR)
+                            except Exception as ex:
+                                print(f"something happened")
+                                print(str(ex))
+                                continue
                             success, t1, t2 = get_opportunity(driver)
                             print(f"Successful? {success}") # TODO when I open a tab I must distinguish tabs and their success
+                            driver.save_screenshot(f"screens/{t1}.png")
                             records.success = success
                             records.accessed = str(t1)
                             records.answered = str(t2)

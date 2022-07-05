@@ -116,7 +116,7 @@ def parse_messages(messages, service):
                             data = part['body']['data']
                             decoded_data = urlsafe_b64decode(data)
     
-                            soup = BeautifulSoup(decoded_data , "lxml")
+                            soup = BeautifulSoup(decoded_data , "html.parser")
                             link = soup.findAll("a")[-4].get("href") #-4
                             service.users().messages().modify(userId='me',
                                                               id=msg['id'],

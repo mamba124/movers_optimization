@@ -1,5 +1,5 @@
 while true
 do
-python api.py
+python -u api.py
 sleep 1
 done
