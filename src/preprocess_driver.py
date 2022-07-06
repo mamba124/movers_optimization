@@ -1,3 +1,4 @@
+import os
 import random
 import time
 from selenium import webdriver
@@ -39,94 +40,72 @@ def generate_proxy():
 
 
 def initialize_driver():
-    """
-    for attempt in range(5):
-        sleep_time = 1.8 ** attempt
-        my_proxy = generate_proxy()
-        if my_proxy:
-            break
-        else:
-            time.sleep(sleep_time)
-    if attempt == 4:
-        raise Exception("all attempts exceeded, couldn't get proxy")
-    """ 
+    RUNTIME = os.environ.get('RUNTIME', 'firefox')
+    drivers_dict = {"remote_firefox": {"driver": webdriver.Firefox,
+                                    "options": get_mozilla_options()
+                                    },
+                    "local_firefox": {"driver": webdriver.Firefox,
+                                    "options": get_mozilla_options()
+                                    },
+                    "chrome": {"driver": webdriver.Chrome,
+                               "options": get_chrome_options(),
+                               },
+                    "docker": {"driver": webdriver.Remote,
+                               "options": get_chrome_options()}
+                    }
+    working_runtime = drivers_dict[RUNTIME]["driver"]
+    if RUNTIME == 'docker':
+        driver = working_runtime['driver']("http://selenium:4444", options=working_runtime['options'])
+    elif RUNTIME == 'local_firefox':
+        for attempt in range(5):
+            sleep_time = 1.8 ** attempt
+            my_proxy = generate_proxy()
+            if my_proxy:
+                break
+            else:
+                time.sleep(sleep_time)
+        if attempt == 4:
+            raise Exception("all attempts exceeded, couldn't get proxy")
+
+        proxy = Proxy({
+             'proxyType': ProxyType.MANUAL,
+             'httpProxy': my_proxy,
+             'ftpProxy': my_proxy,
+             'sslProxy': my_proxy,
+             'noProxy': '' # set this value as desired
+        })        
+        driver = working_runtime['driver'](options=working_runtime['options'], proxy=proxy)
+    else:
+        driver = working_runtime['driver'](options=working_runtime['options'])
+    driver.maximize_window()
+    return driver
+
+
+#class LocalWebDriver:
+#    _subdriver = webdriver.Firefox
+
+#    def __init__(self, **kwargs):
+#        self.headless = kwargs.get("headless", False)
+#        self.options = kwargs.get("options")
+    
+#    def __new__(cls):
+#        instance = super().__new__(cls)  # don't pass extra *args and **kwargs to obj.__new__
+#        cls._subdriver = instance
+#        return instance
+        
+
+def get_mozilla_options(headless=False):
     options = Options()
- #   options.headless = True
-    """
-    proxy = Proxy({
-         'proxyType': ProxyType.MANUAL,
-         'httpProxy': my_proxy,
-         'ftpProxy': my_proxy,
-         'sslProxy': my_proxy,
-         'noProxy': '' # set this value as desired
-    })
-    """
-    driver = webdriver.Firefox(options=options)#proxy=proxy   
+    options.headless = headless # in case YELP interface v4 headless mode for local webdriver generally doesn't work
+
+    return options
+
+
+def get_chrome_options():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-  #  driver = webdriver.Remote("http://selenium:4444", options=chrome_options)
-    driver.maximize_window()
-    return driver
 
-
-
-"""
-
-def initialize_driver():
-    profile = webdriver.FirefoxProfile()
-    options = Options()
-  #  options.headless = True
-    options.add_argument("start-maximized")
-#    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-  #  options.add_experimental_option('useAutomationExtension', False)
+    return chrome_options    
     
-    driver = webdriver.Firefox(profile, options=options)
-    driver.get("https://sslproxies.org/")
-    driver.execute_script("return arguments[0].scrollIntoView(true);", WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//table[@class='table table-striped table-bordered']//th[contains(., 'IP Address')]"))))
-    ips = [my_elem.get_attribute("innerHTML") for my_elem in WebDriverWait(driver, 5).until(EC.visibility_of_all_elements_located((By.XPATH, "//table[@class='table table-striped table-bordered']//tbody//tr/td[position() = 1]")))]
-    ports = [my_elem.get_attribute("innerHTML") for my_elem in WebDriverWait(driver, 5).until(EC.visibility_of_all_elements_located((By.XPATH, "//table[@class='table table-striped table-bordered']//tbody//tr/td[position() = 2]")))]
-    driver.quit()
-    proxies = []
-    for i in range(0, len(ips)):
-        proxies.append(ips[i]+':'+ports[i])
-   # print(proxies)
-    pos = random.randint(0, len(proxies))
- #   for i in range(0, len(proxies)):
-    try:
-        print("Proxy selected: {}".format(proxies[pos]))
-        my_proxy = proxies[pos]
-      
-        proxy = Proxy({
-            'proxyType': ProxyType.MANUAL,
-            'httpProxy': my_proxy,
-            'ftpProxy': my_proxy,
-            'sslProxy': my_proxy,
-            'noProxy': '' # set this value as desired
-            })            
-#      options = Options()
-#      options.add_argument('--proxy-server={}'.format(proxies[i]))
-        driver = webdriver.Firefox(proxy=proxy)
-     #   break
- #     driver.get("https://www.whatismyip.com/proxy-check/?iref=home")
- #     if "Proxy Type" in WebDriverWait(driver, 120).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "p.card-text"))):
- #         break
-    except Exception as e:
-        print(e)
-        driver.quit()
-    print("Proxy Invoked")
-  #  options.headless = True
-   # ua = UserAgent()
- #   user_agent = ua.random
-   # profile.set_preference("general.useragent.override", ua.random)    
-   # profile.set_preference('permissions.default.stylesheet', 2)
-   # profile.set_preference('permissions.default.image', 2)
-  #  profile.set_preference('network.proxy.type', 1)
-   # profile.set_preference('network.proxy.socks', '127.0.0.1')
-   # profile.set_preference('network.proxy.socks_port', 9150)
- #   driver = webdriver.Firefox(profile, options=options)
-    
-    driver.maximize_window()
-    return driver
-"""
