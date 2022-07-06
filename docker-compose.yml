@@ -13,5 +13,6 @@ services:
         restart: on-failure
         depends_on:
             - selenium
- #       ports:
-#            - "4444:4444"
+        environment:
+            - RUNTIME=docker
+

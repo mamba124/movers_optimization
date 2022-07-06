@@ -8,8 +8,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 
-#CROSS_SELECTOR = ".dismiss-link__09f24__Q1RVn"
-#NOTIFICATION_SELECTOR = ".close-button__09f24__qgCyrs"
 
 def generate_proxy():
     profile = webdriver.FirefoxProfile()
