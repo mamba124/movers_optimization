@@ -23,7 +23,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/cloud-platform']
 
 
-def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmail.com", subject="Acess token expires soon..", message_text=''):
+def create_message(sender="helper@tomatoland.info", to="helper@tomatoland.info", subject="Acess token expires soon..", message_text=''):
   """Create a message for an email.
 
   Args:
@@ -43,7 +43,7 @@ def create_message(sender="californiaexperessmail@gmail.com", to="musechika@gmai
   return {'raw': base64.urlsafe_b64encode(message.as_string().encode("utf-8")).decode()}
 
 
-def send_message(service, mail, user="trekmovers.alex@gmail.com"):
+def send_message(service, mail, user="helper@tomatoland.info"):
     try:
         message = (service.users().messages().send(userId=user, body=mail)
                    .execute())
