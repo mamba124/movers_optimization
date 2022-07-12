@@ -38,20 +38,8 @@ def generate_proxy():
 
 
 def initialize_driver():
-    RUNTIME = os.environ.get('RUNTIME', 'firefox')
-    drivers_dict = {"remote_firefox": {"driver": webdriver.Firefox,
-                                    "options": get_mozilla_options()
-                                    },
-                    "local_firefox": {"driver": webdriver.Firefox,
-                                    "options": get_mozilla_options()
-                                    },
-                    "chrome": {"driver": webdriver.Chrome,
-                               "options": get_chrome_options(),
-                               },
-                    "docker": {"driver": webdriver.Remote,
-                               "options": get_chrome_options()}
-                    }
-    working_runtime = drivers_dict[RUNTIME]["driver"]
+    RUNTIME = os.environ.get('RUNTIME', 'local_firefox')    
+    working_runtime = get_runtime(RUNTIME)
     if RUNTIME == 'docker':
         driver = working_runtime['driver']("http://selenium:4444", options=working_runtime['options'])
     elif RUNTIME == 'local_firefox':
@@ -78,6 +66,22 @@ def initialize_driver():
     driver.maximize_window()
     return driver
 
+
+def get_runtime(RUNTIME):
+    drivers_dict = {"remote_firefox": {"driver": webdriver.Firefox,
+                                    "options": get_mozilla_options()
+                                    },
+                    "local_firefox": {"driver": webdriver.Firefox,
+                                    "options": get_mozilla_options()
+                                    },
+                    "chrome": {"driver": webdriver.Chrome,
+                               "options": get_chrome_options(),
+                               },
+                    "docker": {"driver": webdriver.Remote,
+                               "options": get_chrome_options()}
+                    }
+    working_runtime = drivers_dict[RUNTIME]
+    return working_runtime
 
 #class LocalWebDriver:
 #    _subdriver = webdriver.Firefox
