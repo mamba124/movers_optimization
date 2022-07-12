@@ -44,7 +44,7 @@ if __name__ == '__main__':
                             auth = login(driver, link, logged)
                             logged = auth
                             if auth == False:
-                                user="californiaexperessmail@gmail.com"
+                                user="helper@tomatoland.info"
                                 mail = create_message(to=user, message_text="Attention, DEAL WITH CAPTCHA")
                                 service = build_service()
                                 send_message(service, mail, user=user)                                       
