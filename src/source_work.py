@@ -55,45 +55,24 @@ def get_opportunity(driver):
     dog_check(driver) 
     success = False
     t1 = datetime.now().time()
-    t2 = None
     print(f"Accessed at {datetime.now().time()}")
-    html = driver.find_element("css selector", "html").get_attribute("innerHTML")
-    if "Nearby Jobs Details" not in html:
-        print("nearby jobs details fork")
-        elements = driver.find_elements("css selector", SEE_FIRST)
-        if elements:
-            elements[0].click()
-            dog_check(driver)
+
+    print("Nearby jobs details fork")
+    check_fork()
+
     try:
-        next_active = driver.find_elements("css selector", NEXT_ACTIVE)
-        more_info = driver.find_elements("css selector", NEED_MORE_INFO)
-        if next_active:
-            time.sleep(5)
-            next_active[0].click()
-        if more_info:
-            time.sleep(5)
-            more_info[0].click()
+        print("Look for Next active page or Need more info buttons")
+        process_main_buttons(driver)
+        
         name = driver.find_elements("css selector", NAME_SELECTOR)
         navigate_through_button_menu(driver)            
 
-        message_text = build_message(name)
-        message = driver.find_element("css selector", MSG_AREA)
-        message.send_keys(message_text)       
-        
-        driver.find_element("css selector", ANSWER_BUTTON).click()
-        t2 = datetime.now().time()
-        logging.info(f"Answered at {datetime.now().time()}")
-        success = True
+        t2, success = send_message(driver, name)  
+
     except Exception as ex:
         print(ex)
-        quote_time = driver.find_elements("css selector", EXPIRED_TIME_QUOTE)
-        if quote_time:
-            t2 = quote_time[0].text.split(": ")[-1]
-            quote_time_string = f"Quote appeared at the time {t2}"
-        else:
-            quote_time_string = ""
-        logging.info(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
-        print(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
+        quote_time = driver.find_elements("css selector", EXPIRED_TIME_QUOTE)        
+        t2 = build_bad_message(quote_time)
     return success, t1, t2
 
 
@@ -129,3 +108,44 @@ def dog_check(driver):
             print("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
             logging.info("HTTP 504 - GATEWAY TIMEOUT, refreshing..")
     print("dog check finish")
+
+
+def check_fork(driver):
+    html = driver.find_element("css selector", "html").get_attribute("innerHTML")
+    if "Nearby Jobs Details" not in html:
+        elements = driver.find_elements("css selector", SEE_FIRST)
+        if elements:
+            elements[0].click()
+            dog_check(driver)
+
+
+def process_main_buttons(driver):
+    next_active = driver.find_elements("css selector", NEXT_ACTIVE)
+    more_info = driver.find_elements("css selector", NEED_MORE_INFO)
+    if next_active:
+        time.sleep(5)
+        next_active[0].click()
+    if more_info:
+        time.sleep(5)
+        more_info[0].click()
+
+
+def send_message(driver, name):
+    message_text = build_message(name)
+    message = driver.find_element("css selector", MSG_AREA)
+    message.send_keys(message_text)
+    driver.find_element("css selector", ANSWER_BUTTON).click()
+    t2 = datetime.now().time()
+    success = True    
+    return t2, success
+
+
+def build_bad_message(quote_time):
+    if quote_time:
+        t2 = quote_time[0].text.split(": ")[-1]
+        quote_time_string = f"Quote appeared at the time {t2}"
+    else:
+        quote_time_string = ""
+        t2 = None
+    print(f"Opportunity has expired, no dialogue window found.{quote_time_string}")
+    return t2
