@@ -28,7 +28,7 @@ def wait(driver, time, element):
 
 #1 first time. logged is true, but captcha
 #2 captcha, logged is false, captcha still
-#3 captcha, l is false, captcha is off, logged becomes true
+#3 captcha, logged is false, captcha is off, logged becomes true
 def login(driver, link, logged=True):
     wait(driver, 3, YELP_WELCOME)
     dog_check(driver)
@@ -65,10 +65,14 @@ def get_opportunity(driver):
             elements[0].click()
             dog_check(driver)
     try:
+        next_active = driver.find_elements("css selector", NEXT_ACTIVE)
         more_info = driver.find_elements("css selector", NEED_MORE_INFO)
+        if next_active:
+            time.sleep(5)
+            next_active[0].click()
         if more_info:
             time.sleep(5)
-        more_info[0].click()
+            more_info[0].click()
         name = driver.find_elements("css selector", NAME_SELECTOR)
         navigate_through_button_menu(driver)            
 
