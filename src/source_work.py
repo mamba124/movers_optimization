@@ -58,7 +58,7 @@ def get_opportunity(driver):
     print(f"Accessed at {datetime.now().time()}")
 
     print("Nearby jobs details fork")
-    check_fork()
+    check_fork(driver)
 
     try:
         print("Look for Next active page or Need more info buttons")
@@ -120,11 +120,11 @@ def check_fork(driver):
 
 
 def process_main_buttons(driver):
-    next_active = driver.find_elements("css selector", NEXT_ACTIVE)
+   # next_active = driver.find_elements("css selector", NEXT_ACTIVE)
     more_info = driver.find_elements("css selector", NEED_MORE_INFO)
-    if next_active:
-        time.sleep(5)
-        next_active[0].click()
+  #  if next_active:
+  #      time.sleep(5)
+  #      next_active[0].click()
     if more_info:
         time.sleep(5)
         more_info[0].click()

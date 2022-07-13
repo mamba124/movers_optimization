@@ -70,27 +70,29 @@ if __name__ == '__main__':
                             print(f"Accessed at {t1}")
                             print(f"Answered at {t2}")
                             now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
-                            if index >= 17:
+                            if index >= 1:
+                                driver.quit()
                                 raise Exception("Too many tabs")
                     old_counter = index
                         
             except Exception as e:
                 print(e)
                 if "Message: Failed to decode response from marionette" in str(e):
-                    user="californiaexperessmail@gmail.com"
+                    user="helper@tomatoland.info"
                     mail = create_message(to=user, message_text="Attention, something terrible happened with WebDriver! Please, restart bot manually")
                     service = build_service()
-                    send_message(service, mail, user="californiaexperessmail@gmail.com")
+                    send_message(service, mail, user=user)
                     raise Exception("No marionette for some reasons")
                 if "Too many tabs" in str(e):
-                    user="californiaexperessmail@gmail.com"
+                    user="helper@tomatoland.info"
                     mail = create_message(to=user, message_text="Attention, Too many tabs on WebDriver. Bot restarts automatically..")
                     service = build_service()
-                    send_message(service, mail, user="californiaexperessmail@gmail.com")
+                    send_message(service, mail, user=user)
                     raise Exception("Too many tabs")                    
                 traceback.print_exc()
                 if "cookies.pickle" in os.listdir():
                     os.remove("cookies.pickle")
+                driver = initialize_driver()
                 pass
             
         time.sleep(10)
