@@ -1,66 +1,6 @@
 from src import gmail_processor
 import json
-import os
-import pickle
 from unittest.mock import patch, MagicMock, Mock
-
-
-class MockedGService:
-    def __init__(self):
-        pass
-    
-    def run_local_service(self, port):
-        return {"key": "value"}
-    
-    def users():
-        return Creds()
-    
-    def modify(*args):
-        pass
-
-
-class Creds:
-    def __init__(self):
-        self.expired = True
-        self.refresh_token = True
-    
-    def refresh(self, request_object):
-        self.expired = False
-    
-    def from_client_secrets_file(self, path):
-        return MockedGService()
-    
-    def messages():
-        return MockedGService()
-
-    
-def test_tokentime_val():
-    token_path = "tests/test_files/dummy_token"
-    
-    service = Mock()
-    gmail_processor.validate_token_time(service, token_path)
-    assert "dummy_token" not in os.listdir("tests/test_files/")
-
-    with open(token_path, "w") as f:
-        f.write("")
-
-    gmail_processor.token_time_validation(140, token_path)
-    assert "dummy_token" in os.listdir("tests/test_files/")
-
-
-def test_token_check():
-    path = "tests/test_files/dummy_pickle.pickle"
-    with open(path, "wb") as f:
-        pickle.dump({"key": "value"}, f)
-    creds = gmail_processor.token_check(path)
-    assert creds == {"key": "value"}
-
-
-@patch("google_auth_oauthlib.flow.InstalledAppFlow", return_value=Creds)
-def test_refresh_token(mocked_flow):
-    input_creds = Creds()
-    creds = gmail_processor.refresh_token(input_creds, "tests/test_files/credentials.json", "tests/test_files/dummy_pickle.pickle")
-    assert creds.expired == False
 
 
 mocked_google_service = MagicMock()

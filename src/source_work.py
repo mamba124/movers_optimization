@@ -119,6 +119,7 @@ def check_fork(driver):
             dog_check(driver)
 
 
+#TODO Debug logic for Next active quote
 def process_main_buttons(driver):
    # next_active = driver.find_elements("css selector", NEXT_ACTIVE)
     more_info = driver.find_elements("css selector", NEED_MORE_INFO)

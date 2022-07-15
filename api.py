@@ -70,7 +70,7 @@ if __name__ == '__main__':
                             print(f"Accessed at {t1}")
                             print(f"Answered at {t2}")
                             now = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")                      
-                            if index >= 1:
+                            if index >= 17:
                                 driver.quit()
                                 raise Exception("Too many tabs")
                     old_counter = index
