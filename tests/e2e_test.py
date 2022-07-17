@@ -1,10 +1,8 @@
-from datetime import datetime
 from unittest.mock import patch
-from src.source_work import login, get_opportunity
-import time
-import random
-from tests.mocked_selenium import MockedDriver
+from src.preprocess_driver import initialize_driver
 
+"""
+#TODO New test for launch
 general_page = open("tests/test_files/general_message_page.html").read()
 
 driver = MockedDriver(general_page)
@@ -19,4 +17,15 @@ def test_multiple_requests(mocked_login, capsys):
         success, _, _ = get_opportunity(driver)
         print(f"Successful? {success}")
 
+"""
 
+
+@patch("src.preprocess_driver.generate_proxy", return_value="0.0.0.0")
+def test_initialize_driver(mocked_proxy):
+    driver = initialize_driver()    
+    try:
+        driver.quit()
+        assert True == True
+    except Exception as e:
+        print(e)
+        assert False == True

@@ -1,13 +1,18 @@
 version: "2.3"  # optional since v1.27.0
 services:
     selenium:
-        image: selenium/standalone-firefox
+        image: selenium/standalone-chrome
         environment:
-            TZ: Europe/Amsterdam
+            - SE_NODE_SESSION_TIMEOUT=999999
         ports:
             - "4444:4444"
-
     bot:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile.selenium
+        restart: on-failure
         depends_on:
             - selenium
+        environment:
+            - RUNTIME=docker
+
