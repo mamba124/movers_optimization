@@ -19,7 +19,7 @@ Version 1
 #EXPIRED_TIME_QUOTE = body > yelp-react-root > div > div.messenger-container__09f24__qt8O4 > div > div.messenger_right__09f24__fndbc.border--left__09f24__Lt8WF.border-color--default__09f24__JbNoB > div > div > div.u-flex__09f24__rt07y.u-flex-column__09f24__m6LIn.u-flex-item__09f24__YuSEF.border-color--default__09f24__JbNoB > div.project-description-container__09f24__zySxi.u-flex-item__09f24__YuSEF.messenger-right.border-color--default__09f24__JbNoB > div > div > div.messages-grouped-by-time-view_group_time-sent__09f24__lCCiu.border-color--default__09f24__NPAKY > p"
 
 """
-Version 2
+Version 1.1
 """
 
 #SEND_BUTTON = "div.margin-r3__09f24__ppHm0:nth-child(2) > button:nth-child(1)"
@@ -27,7 +27,7 @@ Version 2
 
 
 """
-Version 3 (current)
+Version 2 (new interface)
 """
 
 #NEXT_BUTTON = "#modal-portal-container > div:nth-child(3) > div > div > div > div.border-color--default__09f24__NPAKY > div > div > div.css-40lu3n.padding-t3__09f24__TMrIW.padding-r3__09f24__eaF7p.padding-b4__09f24__q6U6q.padding-l3__09f24__IOjKY.border-color--default__09f24__NPAKY > div:nth-child(2) > div > button"
@@ -44,7 +44,10 @@ EXPIRED_TIME_QUOTE = "div.css-19idom:nth-child(2) > div:nth-child(1) > div:nth-c
 YELP_WELCOME = ".margin-b2__09f24__CEMjT"
 
 
-###
+"""
+Version 2.1 (current)
+"""
+
 NEED_MORE_INFO = "button.css-16nzldp:nth-child(2)"
 RADIO_BUTTON = "#radio-send_message"
 NEXT_BUTTON = ".css-o88s2i"

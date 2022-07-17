@@ -24,3 +24,4 @@ Here are main bot's runtimes:
 By default everywhere is configured *headless* mode as option for webdriver. 
 It is done, because otherwise buttons are not interactable. 
 
+In case new versions of the website appear, don't hesitate to update src/inbox_selectors.py 
