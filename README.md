@@ -1,13 +1,13 @@
 To launch the project
 
 
-##**via docker**
+## **via docker**
 
 docker-compose up --build
 In case you need **START**/**FINISH** time adjustment configure it in **Dockerfile** env vars
 
 
-##**locally**
+## **locally**
 0. Install Geckodriver (preferable) or Chromedriver on your machine
 1. Install project requirements in a separated env
 2. Run the command depending on the webdriver you've installed at previous step.
